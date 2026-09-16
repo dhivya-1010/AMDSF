@@ -2,7 +2,14 @@ import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Satellite, ShieldAlert, Radio } from 'lucide-react';
+
+// Fix default Leaflet icon assets if needed
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
 
 // Create custom colored dot icons using SVG divIcons
 const createDotIcon = (color, size = 16, pulse = false) => {
@@ -49,16 +56,16 @@ const lowDebrisIcon = createDotIcon('#38bdf8', 12);
 const stationIcon = createDotIcon('#10b981', 14);
 
 export default function MissionMap({ mapData, missionName }) {
-  const defaultPos = [48.8566, 2.3522];
+  const defaultPos = [20.5937, 78.9629];
   const satPos = mapData?.satellite_position 
     ? [mapData.satellite_position.lat, mapData.satellite_position.lng] 
     : defaultPos;
 
   const polylineCoords = mapData?.ground_track?.map(pt => [pt.lat, pt.lng]) || [
-    [28.5728, -80.6490],
-    [38.8951, -40.0000],
-    [48.8566, 2.3522],
-    [55.7558, 37.6173]
+    [0.5937, 38.9629],
+    [15.5937, 63.9629],
+    [20.5937, 78.9629],
+    [35.5937, 108.9629]
   ];
 
   return (
@@ -95,8 +102,9 @@ export default function MissionMap({ mapData, missionName }) {
         className="w-full h-full"
       >
         <TileLayer
-          attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maxZoom={19}
         />
 
         {/* Orbit Ground Track Line */}
@@ -117,7 +125,7 @@ export default function MissionMap({ mapData, missionName }) {
           pathOptions={{
             color: '#00f2fe',
             fillColor: '#00f2fe',
-            fillOpacity: 0.1,
+            fillOpacity: 0.12,
             weight: 1.5,
             dashArray: '4, 4'
           }}
