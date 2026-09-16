@@ -9,7 +9,13 @@ class WeatherAgent:
     def __init__(self):
         self.name = "Space Weather Intelligence Agent"
 
-    async def analyze(self) -> WeatherAnalysisResult:
+    async def analyze(
+        self,
+        preferred_date: str = "2026-10-15",
+        flexibility_days: int = 3,
+        launch_site: str = "Satish Dhawan Space Centre",
+        target_orbit_km: float = 550.0
+    ) -> WeatherAnalysisResult:
         # Fetch external real-time data through services
         swpc_data = await swpc_service.get_planetary_k_index()
         donki_data = await donki_service.get_recent_cme_events()

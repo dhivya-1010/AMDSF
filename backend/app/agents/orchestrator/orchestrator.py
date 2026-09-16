@@ -14,19 +14,45 @@ class MissionOrchestrator:
     def __init__(self):
         self.name = "AMDSF Central Mission Orchestrator"
 
-    async def execute_mission_analysis(self, mission_req: MissionRequestSchema) -> Dict[str, Any]:
-        # Concurrently invoke all 4 independent domain agents
-        debris_task = debris_agent.analyze(target_orbit_km=mission_req.target_orbit)
-        weather_task = weather_agent.analyze()
-        feasibility_task = feasibility_agent.analyze(
-            payload_mass=mission_req.payload_mass,
-            target_orbit=mission_req.target_orbit,
-            mission_duration=mission_req.mission_duration,
-            budget=mission_req.budget
+    async def execute_mission_analysis(self, req: MissionRequestSchema) -> Dict[str, Any]:
+        # Concurrently invoke all 4 independent domain agents with explicit mapping
+        debris_task = debris_agent.analyze(
+            target_orbit_km=req.orbit.altitude_km,
+            inclination_deg=req.orbit.inclination_deg,
+            eccentricity=req.orbit.eccentricity,
+            mission_duration=req.mission.duration_days,
+            preferred_date=req.constraints.preferred_launch_date,
+            flexibility_days=req.constraints.launch_window_flexibility_days
         )
+        
+        weather_task = weather_agent.analyze(
+            preferred_date=req.constraints.preferred_launch_date,
+            flexibility_days=req.constraints.launch_window_flexibility_days,
+            launch_site=req.launch.site,
+            target_orbit_km=req.orbit.altitude_km
+        )
+        
+        feasibility_task = feasibility_agent.analyze(
+            payload_mass=req.mission.payload_mass_kg,
+            target_orbit=req.orbit.altitude_km,
+            mission_duration=req.mission.duration_days,
+            budget=req.mission.budget_musd,
+            launch_site=req.launch.site,
+            launch_vehicle=req.launch.vehicle
+        )
+        
         coverage_task = coverage_agent.analyze(
-            target_region=mission_req.target_region,
-            target_orbit_km=mission_req.target_orbit
+            target_country=req.target.country,
+            target_region=req.target.region,
+            target_area=req.target.area,
+            latitude=req.target.latitude,
+            longitude=req.target.longitude,
+            coverage_requirement=req.target.coverage_requirement,
+            coverage_radius_km=req.target.coverage_radius_km,
+            target_orbit_km=req.orbit.altitude_km,
+            inclination_deg=req.orbit.inclination_deg,
+            mission_duration=req.mission.duration_days,
+            objective_type=req.objective.type
         )
 
         debris_res, weather_res, feasibility_res, coverage_res = await asyncio.gather(
@@ -35,9 +61,7 @@ class MissionOrchestrator:
 
         # Cross-Domain Reasoning & Multi-Objective Arbitration
         orchestrator_res = CrossDomainReasoner.synthesize(
-            mission_name=mission_req.mission_name,
-            target_orbit_km=mission_req.target_orbit,
-            target_region=mission_req.target_region,
+            mission_req=req,
             debris=debris_res,
             weather=weather_res,
             feasibility=feasibility_res,
@@ -45,14 +69,21 @@ class MissionOrchestrator:
         )
 
         return {
+            "mission_definition": req.model_dump(),
             "mission": {
-                "mission_name": mission_req.mission_name,
-                "payload_mass": mission_req.payload_mass,
-                "target_orbit": mission_req.target_orbit,
-                "mission_duration": mission_req.mission_duration,
-                "budget": mission_req.budget,
-                "target_region": mission_req.target_region,
-                "preferred_launch_date": mission_req.preferred_launch_date
+                "mission_name": req.mission_name,
+                "objective": req.objective.type,
+                "target_location": f"{req.target.area}, {req.target.region}, {req.target.country}",
+                "target_coordinates": f"{req.target.latitude}° N, {req.target.longitude}° E",
+                "launch_site": f"{req.launch.site} ({req.launch.launch_site_code})",
+                "payload_mass": req.mission.payload_mass_kg,
+                "target_orbit": req.orbit.altitude_km,
+                "inclination": req.orbit.inclination_deg,
+                "mission_duration": req.mission.duration_days,
+                "budget": req.mission.budget_musd,
+                "target_region": f"{req.target.area}, {req.target.region}",
+                "preferred_launch_date": req.constraints.preferred_launch_date,
+                "max_risk": req.constraints.maximum_acceptable_risk
             },
             "debris": debris_res.model_dump(),
             "weather": weather_res.model_dump(),

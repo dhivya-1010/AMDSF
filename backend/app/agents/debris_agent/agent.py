@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List, Optional
 from app.services.celestrak_service import celestrak_service
 from app.services.leolabs_service import leolabs_service
 from .models import DebrisAnalysisResult
@@ -10,11 +10,26 @@ class DebrisAgent:
     def __init__(self):
         self.name = "Orbital Debris Intelligence Agent"
 
-    async def analyze(self, target_orbit_km: float) -> DebrisAnalysisResult:
+    async def analyze(
+        self,
+        target_orbit_km: float,
+        inclination_deg: float = 97.6,
+        eccentricity: float = 0.0,
+        mission_duration: int = 365,
+        preferred_date: str = "2026-10-15",
+        flexibility_days: int = 3
+    ) -> DebrisAnalysisResult:
         # Retrieve external catalog data via dedicated service
         catalog_data = await celestrak_service.get_active_satellites_sample()
         # Analyze and evaluate
-        result = DebrisAnalyzer.evaluate(target_orbit_km=target_orbit_km, catalog_data=catalog_data)
+        result = DebrisAnalyzer.evaluate(
+            target_orbit_km=target_orbit_km,
+            catalog_data=catalog_data,
+            inclination_deg=inclination_deg,
+            mission_duration=mission_duration,
+            preferred_date=preferred_date,
+            flexibility_days=flexibility_days
+        )
         return result
 
 debris_agent = DebrisAgent()
