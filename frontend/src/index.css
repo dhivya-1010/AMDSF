@@ -1,78 +1,141 @@
 @import "tailwindcss";
 
 @theme {
-  --color-space-950: #070b14;
-  --color-space-900: #0a101d;
-  --color-space-850: #0d1527;
-  --color-space-800: #111c33;
-  --color-space-700: #1a2b4c;
-  --color-space-600: #263d66;
+  --color-space-950: #040711;
+  --color-space-900: #070d1a;
+  --color-space-850: #0b1326;
+  --color-space-800: #101c36;
+  --color-space-700: #17274a;
+  --color-space-600: #203666;
 
-  --color-cyber-cyan: #00f2fe;
-  --color-cyber-blue: #4facfe;
-  --color-cyber-amber: #f6ad55;
-  --color-cyber-emerald: #10b981;
-  --color-cyber-rose: #f43f5e;
+  --color-tactical-cyan: #00f2fe;
+  --color-tactical-blue: #38bdf8;
+  --color-tactical-emerald: #10b981;
+  --color-tactical-amber: #f59e0b;
+  --color-tactical-rose: #f43f5e;
+}
+
+:root {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color-scheme: dark;
 }
 
 body {
-  background-color: var(--color-space-950);
+  background-color: #040711;
   color: #f1f5f9;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
-  background-image: 
-    radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 85% 75%, rgba(79, 172, 254, 0.04) 0%, transparent 40%),
-    linear-gradient(rgba(10, 16, 29, 0.95), rgba(7, 11, 20, 0.98));
-  background-attachment: fixed;
+  overflow-x: hidden;
+  selection-background-color: rgba(0, 242, 254, 0.3);
 }
 
-/* Custom Leaflet Dark Mode styling */
+/* Aerospace Technical HUD Utilities */
+.font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.font-display {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+}
+
+/* Tactical HUD Card with Corner Ticks */
+.hud-card {
+  position: relative;
+  background: rgba(7, 13, 26, 0.85);
+  border: 1px solid rgba(23, 39, 74, 0.9);
+  backdrop-filter: blur(12px);
+  border-radius: 0.75rem;
+  transition: all 0.25s ease;
+}
+
+.hud-card:hover {
+  border-color: rgba(0, 242, 254, 0.4);
+  box-shadow: 0 10px 30px -10px rgba(0, 242, 254, 0.15);
+}
+
+.hud-corner-ticks::before,
+.hud-corner-ticks::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-color: rgba(0, 242, 254, 0.6);
+  pointer-events: none;
+}
+
+.hud-corner-ticks::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid;
+  border-left: 2px solid;
+}
+
+.hud-corner-ticks::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid;
+  border-right: 2px solid;
+}
+
+/* Background Image Overlay Helper */
+.space-bg-hero {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Subtle Technical Grid Lines */
+.tech-grid {
+  background-image: 
+    linear-gradient(to right, rgba(23, 39, 74, 0.25) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(23, 39, 74, 0.25) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Leaflet Dark Space Inversion */
 .leaflet-container {
   width: 100%;
   height: 100%;
-  background-color: #0a101d !important;
-  font-family: inherit;
-  border-radius: 0.5rem;
+  background-color: #070d1a !important;
+  font-family: 'JetBrains Mono', monospace;
+  border-radius: 0.75rem;
 }
 
 .leaflet-tile {
-  filter: brightness(0.7) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7) !important;
+  filter: brightness(0.65) invert(1) contrast(3.2) hue-rotate(205deg) saturate(0.25) brightness(0.7) !important;
 }
 
 .leaflet-popup-content-wrapper {
-  background: #0d1527 !important;
-  color: #e2e8f0 !important;
-  border: 1px solid #1a2b4c !important;
+  background: #0b1326 !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #17274a !important;
   border-radius: 8px !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.7) !important;
 }
 
 .leaflet-popup-tip {
-  background: #0d1527 !important;
+  background: #0b1326 !important;
 }
 
-/* Custom markers */
 .custom-map-marker {
   background: transparent;
   border: none;
 }
 
-/* Scrollbar styles */
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a101d;
+  background: #040711;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1a2b4c;
+  background: #17274a;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #263d66;
+  background: #00f2fe;
 }

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Sliders, Play, RefreshCw, Layers, CheckCircle2, ChevronRight,
   ChevronLeft, Compass, Globe2, Rocket, Award, ShieldAlert,
-  HelpCircle, AlertCircle, MapPin
+  HelpCircle, AlertCircle, MapPin, Terminal, Calendar, DollarSign
 } from 'lucide-react';
 import { useMission } from '../context/MissionContext';
-import LoadingState from '../components/LoadingState';
-import ErrorState from '../components/ErrorState';
+import StarfieldCanvas from '../components/StarfieldCanvas';
+import rocketPadImg from '../assets/images/rocket_launch_pad.jpg';
 
 // Curated geographic regions & spaceports dataset
 const CURATED_TARGETS = {
@@ -145,10 +145,9 @@ export default function MissionPlanning() {
       };
     }
     return {
-      // Default clean starter template (China EO Mission or initial defaults)
       mission_name: 'China Earth Observation Mission',
       objective_type: 'EARTH_OBSERVATION',
-      objective_description: 'High-resolution optical and infrared earth observation for environmental monitoring and infrastructure analysis.',
+      objective_description: 'High-resolution optical and infrared earth observation for coastal environmental monitoring and infrastructure analysis.',
       target_country: 'China',
       target_region: 'Beijing',
       target_area: 'Beijing Metropolitan Area',
@@ -354,23 +353,37 @@ export default function MissionPlanning() {
   ];
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-4xl mx-auto pb-12">
+      <StarfieldCanvas count={50} opacity={0.35} />
 
-      {/* Header */}
-      <div className="pb-4 border-b border-space-700/80">
-        <div className="flex items-center gap-2">
-          <Sliders className="w-6 h-6 text-cyan-400" />
-          <h1 className="text-xl sm:text-2xl font-bold font-mono text-white tracking-wide">
-            Mission Planning & Multi-Agent Orchestration
+      {/* Hero Header with Rocket Launch Gantry Atmosphere */}
+      <div className="relative rounded-2xl overflow-hidden border border-space-700 p-6 sm:p-8 shadow-2xl">
+        <div
+          className="absolute inset-0 space-bg-hero"
+          style={{
+            backgroundImage: `url(${rocketPadImg})`,
+            backgroundPosition: 'center 40%',
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-space-950 via-space-950/85 to-space-950/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-space-950 via-transparent to-space-950/40" />
+
+        <div className="relative z-10 space-y-2">
+          <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs">
+            <Sliders className="w-4 h-4" />
+            <span>MISSION PLANNING CONSOLE</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold font-mono text-white tracking-wide">
+            Flight Parameters Specification
           </h1>
+          <p className="text-xs sm:text-sm text-slate-300 font-mono max-w-2xl leading-relaxed">
+            Define target geography, spaceport staging, orbital mechanics, and budget thresholds. Data propagates across all 4 domain intelligence agents.
+          </p>
         </div>
-        <p className="text-xs sm:text-sm text-slate-400 mt-1">
-          Define full mission parameters across all 6 steps before dispatching to autonomous domain agents.
-        </p>
       </div>
 
       {/* Stepper Progress Bar */}
-      <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-4 shadow-lg">
+      <div className="bg-space-900/90 border border-space-700 rounded-xl p-4 shadow-xl backdrop-blur-md hud-corner-ticks">
         <div className="flex items-center justify-between">
           {stepsList.map((s, idx) => (
             <React.Fragment key={s.num}>
@@ -382,9 +395,9 @@ export default function MissionPlanning() {
                   }}
                   className={`w-7 h-7 rounded-full flex items-center justify-center font-mono text-xs font-bold transition ${
                     step === s.num
-                      ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30'
+                      ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/40 ring-2 ring-cyan-400'
                       : step > s.num
-                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                      ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/50'
                       : 'bg-space-850 text-slate-500 border border-space-700'
                   }`}
                 >
@@ -429,21 +442,21 @@ export default function MissionPlanning() {
 
       {/* STEP 1: MISSION OBJECTIVE */}
       {step === 1 && (
-        <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-6 shadow-xl space-y-5">
+        <div className="bg-space-900/90 border border-space-700 rounded-xl p-6 shadow-xl space-y-5 backdrop-blur-md hud-corner-ticks">
           <div className="border-b border-space-800 pb-3">
             <h2 className="text-sm font-bold font-mono text-cyan-400 uppercase tracking-wider flex items-center gap-2">
               <span>Step 1 of 6</span>
               <span className="text-slate-500">—</span>
-              <span className="text-white">Mission Objective & Overview</span>
+              <span className="text-white">Mission Objective & Identification</span>
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Establish core mission identification and high-level operational domain.
+            <p className="text-xs text-slate-400 mt-0.5 font-mono">
+              Establish core mission naming and high-level operational domain category.
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 font-mono">
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Mission Name *
               </label>
               <input
@@ -456,7 +469,7 @@ export default function MissionPlanning() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Primary Objective Type *
               </label>
               <select
@@ -474,7 +487,7 @@ export default function MissionPlanning() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Mission Description & Scope
               </label>
               <textarea
@@ -491,21 +504,21 @@ export default function MissionPlanning() {
 
       {/* STEP 2: TARGET DEFINITION */}
       {step === 2 && (
-        <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-6 shadow-xl space-y-5">
+        <div className="bg-space-900/90 border border-space-700 rounded-xl p-6 shadow-xl space-y-5 backdrop-blur-md hud-corner-ticks">
           <div className="border-b border-space-800 pb-3">
             <h2 className="text-sm font-bold font-mono text-cyan-400 uppercase tracking-wider flex items-center gap-2">
               <span>Step 2 of 6</span>
               <span className="text-slate-500">—</span>
               <span className="text-white">Target Operational Geography</span>
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-400 mt-0.5 font-mono">
               Specify ground observation region, precise coordinates, and coverage constraints.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono">
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Target Country *
               </label>
               <select
@@ -520,7 +533,7 @@ export default function MissionPlanning() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Target State / Region *
               </label>
               <select
@@ -535,7 +548,7 @@ export default function MissionPlanning() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Target Area / Zone *
               </label>
               <select
@@ -550,9 +563,9 @@ export default function MissionPlanning() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 font-mono">
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Target Latitude (° N/S) *
               </label>
               <input
@@ -567,7 +580,7 @@ export default function MissionPlanning() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Target Longitude (° E/W) *
               </label>
               <input
@@ -582,9 +595,9 @@ export default function MissionPlanning() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 font-mono">
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Coverage Requirement (%) *
               </label>
               <input
@@ -598,7 +611,7 @@ export default function MissionPlanning() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Coverage Radius (km) *
               </label>
               <input
@@ -621,21 +634,21 @@ export default function MissionPlanning() {
 
       {/* STEP 3: LAUNCH CONFIGURATION */}
       {step === 3 && (
-        <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-6 shadow-xl space-y-5">
+        <div className="bg-space-900/90 border border-space-700 rounded-xl p-6 shadow-xl space-y-5 backdrop-blur-md hud-corner-ticks">
           <div className="border-b border-space-800 pb-3">
             <h2 className="text-sm font-bold font-mono text-cyan-400 uppercase tracking-wider flex items-center gap-2">
               <span>Step 3 of 6</span>
               <span className="text-slate-500">—</span>
-              <span className="text-white">Launch Site & Vehicle Staging</span>
+              <span className="text-white">Launch Spaceport & Staging</span>
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-400 mt-0.5 font-mono">
               Select supported spaceport facilities and launch vehicle configurations.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono">
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Launch Country *
               </label>
               <select
@@ -650,7 +663,7 @@ export default function MissionPlanning() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Supported Launch Site / Spaceport *
               </label>
               <select
@@ -665,9 +678,9 @@ export default function MissionPlanning() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 font-mono">
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Assigned Vehicle Class
               </label>
               <select
@@ -683,8 +696,8 @@ export default function MissionPlanning() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
-                Site Facility Code
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
+                Facility Code
               </label>
               <input
                 type="text"
@@ -699,21 +712,21 @@ export default function MissionPlanning() {
 
       {/* STEP 4: ORBITAL CONFIGURATION */}
       {step === 4 && (
-        <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-6 shadow-xl space-y-5">
+        <div className="bg-space-900/90 border border-space-700 rounded-xl p-6 shadow-xl space-y-5 backdrop-blur-md hud-corner-ticks">
           <div className="border-b border-space-800 pb-3">
             <h2 className="text-sm font-bold font-mono text-cyan-400 uppercase tracking-wider flex items-center gap-2">
               <span>Step 4 of 6</span>
               <span className="text-slate-500">—</span>
               <span className="text-white">Orbital Architecture</span>
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-400 mt-0.5 font-mono">
               Configure altitude, orbital inclination, and eccentricity parameters.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono">
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Orbit Regime *
               </label>
               <select
@@ -729,7 +742,7 @@ export default function MissionPlanning() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Target Altitude (km) *
               </label>
               <input
@@ -743,9 +756,9 @@ export default function MissionPlanning() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 font-mono">
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Inclination (Degrees) *
               </label>
               <input
@@ -760,7 +773,7 @@ export default function MissionPlanning() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Eccentricity
               </label>
               <input
@@ -779,21 +792,21 @@ export default function MissionPlanning() {
 
       {/* STEP 5: MISSION CONSTRAINTS */}
       {step === 5 && (
-        <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-6 shadow-xl space-y-5">
+        <div className="bg-space-900/90 border border-space-700 rounded-xl p-6 shadow-xl space-y-5 backdrop-blur-md hud-corner-ticks">
           <div className="border-b border-space-800 pb-3">
             <h2 className="text-sm font-bold font-mono text-cyan-400 uppercase tracking-wider flex items-center gap-2">
               <span>Step 5 of 6</span>
               <span className="text-slate-500">—</span>
               <span className="text-white">Payload, Budget & Constraints</span>
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-400 mt-0.5 font-mono">
               Set mass constraints, financial allocation, and candidate launch timing windows.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono">
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Payload Mass (kg) *
               </label>
               <input
@@ -807,7 +820,7 @@ export default function MissionPlanning() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Budget ($M USD) *
               </label>
               <input
@@ -821,7 +834,7 @@ export default function MissionPlanning() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Duration (Days) *
               </label>
               <input
@@ -835,9 +848,9 @@ export default function MissionPlanning() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 font-mono">
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Preferred Launch Date *
               </label>
               <input
@@ -849,7 +862,7 @@ export default function MissionPlanning() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Max Acceptable Risk
               </label>
               <select
@@ -864,7 +877,7 @@ export default function MissionPlanning() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+              <label className="block text-xs text-slate-300 font-semibold mb-1.5 uppercase">
                 Window Flexibility (Days)
               </label>
               <input
@@ -882,14 +895,14 @@ export default function MissionPlanning() {
 
       {/* STEP 6: REVIEW & VALIDATE */}
       {step === 6 && (
-        <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-6 shadow-xl space-y-6">
+        <div className="bg-space-900/90 border border-space-700 rounded-xl p-6 shadow-xl space-y-6 backdrop-blur-md hud-corner-ticks">
           <div className="border-b border-space-800 pb-3">
             <h2 className="text-sm font-bold font-mono text-cyan-400 uppercase tracking-wider flex items-center gap-2">
               <span>Step 6 of 6</span>
               <span className="text-slate-500">—</span>
               <span className="text-white">Review Mission Definition & Run Multi-Agent Analysis</span>
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-400 mt-0.5 font-mono">
               Verify all configured parameters before dispatching to the 4 autonomous domain agents.
             </p>
           </div>
@@ -931,23 +944,23 @@ export default function MissionPlanning() {
       )}
 
       {/* Navigation Buttons */}
-      <div className="pt-2 flex items-center justify-between">
+      <div className="pt-2 flex items-center justify-between font-mono">
         {step > 1 ? (
           <button
             type="button"
             onClick={handleBack}
-            className="px-4 py-2.5 rounded-lg bg-space-800 hover:bg-space-700 text-xs font-mono font-semibold text-slate-300 border border-space-700 flex items-center gap-1.5 transition"
+            className="px-4 py-2.5 rounded-lg bg-space-850 hover:bg-space-800 text-xs font-semibold text-slate-300 border border-space-700 flex items-center gap-1.5 transition cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4" />
             <span>Back</span>
           </button>
-        ) : <div></div>}
+        ) : <div />}
 
         {step < 6 ? (
           <button
             type="button"
             onClick={handleNext}
-            className="px-6 py-2.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-mono font-bold flex items-center gap-1.5 shadow-md shadow-cyan-500/20 transition cursor-pointer"
+            className="px-6 py-2.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-cyan-500/20 transition cursor-pointer"
           >
             <span>Next Step</span>
             <ChevronRight className="w-4 h-4" />
@@ -957,17 +970,17 @@ export default function MissionPlanning() {
             type="button"
             disabled={loading}
             onClick={handleSubmitAnalysis}
-            className="px-8 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 text-sm font-mono font-bold shadow-lg shadow-cyan-500/30 flex items-center gap-2 transition disabled:opacity-50 cursor-pointer"
+            className="px-8 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 text-sm font-bold shadow-xl shadow-cyan-500/30 flex items-center gap-2 transition disabled:opacity-50 cursor-pointer"
           >
             {loading ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin text-slate-950" />
-                <span>Running Multi-Agent Orchestration...</span>
+                <span>Dispatching Autonomous Agents...</span>
               </>
             ) : (
               <>
                 <Play className="w-4 h-4 fill-current text-slate-950" />
-                <span>Run Mission Analysis</span>
+                <span>Run Multi-Agent Analysis</span>
               </>
             )}
           </button>

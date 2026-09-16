@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Layers, MapPin, Compass, Rocket, Calendar, ArrowRight } from 'lucide-react';
+import { Layers, MapPin, Compass, Rocket, Calendar, ArrowRight, Activity, Terminal } from 'lucide-react';
 
 export default function MissionContextBar({ mission, activePage }) {
   if (!mission) return null;
@@ -11,16 +11,21 @@ export default function MissionContextBar({ mission, activePage }) {
   const constraints = mission.constraints || {};
 
   return (
-    <div className="bg-space-900 border border-cyan-500/40 rounded-xl p-4 shadow-lg mb-6 backdrop-blur-md">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pb-3 border-b border-space-800">
+    <div className="relative bg-space-900/90 border border-space-700/80 rounded-xl p-4 shadow-2xl mb-6 backdrop-blur-md hud-corner-ticks overflow-hidden">
+      {/* Background Subtle Coordinate Grid */}
+      <div className="absolute inset-0 tech-grid opacity-30 pointer-events-none"></div>
+
+      {/* Header Row */}
+      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pb-3 border-b border-space-800">
         <div className="flex items-center gap-3">
-          <div className="px-2.5 py-1 rounded bg-cyan-950 border border-cyan-700/80 text-cyan-300 font-mono text-xs font-bold">
-            {mission.mission_id || "AMDSF-ACTIVE"}
+          <div className="px-2.5 py-1 rounded bg-cyan-950/80 border border-cyan-500/50 text-cyan-300 font-mono text-xs font-bold flex items-center gap-1.5 shadow-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span>{mission.mission_id || "AMDSF-ACTIVE"}</span>
           </div>
           <div>
             <h2 className="text-sm font-bold text-white font-mono tracking-wide flex items-center gap-2">
               <span>{mission.mission_name}</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-space-800 text-slate-300 uppercase font-normal">
+              <span className="text-[10px] px-2 py-0.5 rounded bg-space-800 text-slate-300 uppercase font-mono border border-space-700">
                 {mission.objective?.type || "EARTH_OBSERVATION"}
               </span>
             </h2>
@@ -28,54 +33,64 @@ export default function MissionContextBar({ mission, activePage }) {
         </div>
 
         <div className="flex items-center gap-2 text-xs font-mono">
+          <span className="text-[10px] text-slate-400 font-mono mr-1 hidden sm:inline">[CONTEXT LOCKED]</span>
           <Link
             to="/planning"
-            className="px-3 py-1 rounded bg-space-850 hover:bg-space-800 text-slate-300 hover:text-white border border-space-700 flex items-center gap-1.5 transition text-[11px]"
+            className="px-3 py-1 rounded bg-space-850 hover:bg-space-800 text-cyan-300 hover:text-white border border-space-700 flex items-center gap-1.5 transition text-[11px]"
           >
-            <span>Edit Mission</span>
+            <span>Reconfigure Mission</span>
             <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 text-xs font-mono">
-        <div className="flex items-start gap-2">
-          <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
+      {/* Telemetry Metrics Grid */}
+      <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 pt-3 text-xs font-mono">
+        <div className="flex items-start gap-2.5">
+          <div className="p-1.5 rounded bg-space-850 border border-space-700 text-cyan-400 mt-0.5">
+            <MapPin className="w-3.5 h-3.5" />
+          </div>
           <div>
-            <span className="text-[10px] text-slate-400 uppercase block">Target Area</span>
-            <span className="text-white font-semibold truncate block max-w-[150px]" title={`${target.area}, ${target.region}`}>
+            <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Observation Target</span>
+            <span className="text-white font-bold truncate block max-w-[170px]" title={`${target.area}, ${target.region}`}>
               {target.area || target.region || "Target Location"}
             </span>
-            <span className="text-[10px] text-slate-500">{target.country || "Global"}</span>
+            <span className="text-[10px] text-slate-400">{target.country || "Global"} ({target.latitude}°N, {target.longitude}°E)</span>
           </div>
         </div>
 
-        <div className="flex items-start gap-2">
-          <Compass className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2.5">
+          <div className="p-1.5 rounded bg-space-850 border border-space-700 text-cyan-400 mt-0.5">
+            <Compass className="w-3.5 h-3.5" />
+          </div>
           <div>
-            <span className="text-[10px] text-slate-400 uppercase block">Orbit Regime</span>
-            <span className="text-cyan-300 font-semibold">{orbit.type || "LEO"} — {orbit.altitude_km || 550} km</span>
-            <span className="text-[10px] text-slate-500">{orbit.inclination_deg || 97.6}° Inclination</span>
+            <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Orbit Architecture</span>
+            <span className="text-cyan-300 font-bold">{orbit.type || "LEO"} — {orbit.altitude_km || 550} km</span>
+            <span className="text-[10px] text-slate-400 block">{orbit.inclination_deg || 97.6}° Inclination</span>
           </div>
         </div>
 
-        <div className="flex items-start gap-2">
-          <Rocket className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2.5">
+          <div className="p-1.5 rounded bg-space-850 border border-space-700 text-cyan-400 mt-0.5">
+            <Rocket className="w-3.5 h-3.5" />
+          </div>
           <div>
-            <span className="text-[10px] text-slate-400 uppercase block">Launch Spaceport</span>
-            <span className="text-white font-semibold truncate block max-w-[150px]" title={launch.site}>
+            <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Spaceport Facility</span>
+            <span className="text-white font-bold truncate block max-w-[170px]" title={launch.site}>
               {launch.site || "Spaceport"}
             </span>
-            <span className="text-[10px] text-slate-500">{launch.country || "Launch Country"}</span>
+            <span className="text-[10px] text-slate-400 block">{launch.country || "Launch Country"}</span>
           </div>
         </div>
 
-        <div className="flex items-start gap-2">
-          <Calendar className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2.5">
+          <div className="p-1.5 rounded bg-space-850 border border-space-700 text-cyan-400 mt-0.5">
+            <Calendar className="w-3.5 h-3.5" />
+          </div>
           <div>
-            <span className="text-[10px] text-slate-400 uppercase block">Preferred Epoch</span>
-            <span className="text-emerald-400 font-semibold">{constraints.preferred_launch_date || "2026-10-15"}</span>
-            <span className="text-[10px] text-slate-500">±{constraints.launch_window_flexibility_days || 3}d flexibility</span>
+            <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Target Epoch</span>
+            <span className="text-emerald-400 font-bold">{constraints.preferred_launch_date || "2026-10-15"}</span>
+            <span className="text-[10px] text-slate-400 block">±{constraints.launch_window_flexibility_days || 3}d flexibility</span>
           </div>
         </div>
       </div>

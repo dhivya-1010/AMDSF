@@ -1,9 +1,11 @@
 import React from 'react';
-import { Satellite, Globe2, Users, Radio, Info, Database, RefreshCw, Play, MapPin } from 'lucide-react';
+import { Satellite, Globe2, Users, Radio, Info, Database, RefreshCw, Play, MapPin, Signal } from 'lucide-react';
 import { useMission } from '../context/MissionContext';
 import MissionContextBar from '../components/MissionContextBar';
 import NoActiveMissionState from '../components/NoActiveMissionState';
 import MissionMap from '../components/MissionMap';
+import StarfieldCanvas from '../components/StarfieldCanvas';
+import coverageBgImg from '../assets/images/coverage_footprint.jpg';
 
 export default function CoverageAnalysis() {
   const { activeMission, analysisResults, analysisStatus, runSingleAgent } = useMission();
@@ -20,94 +22,108 @@ export default function CoverageAnalysis() {
   const isRunning = status === 'RUNNING';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-12">
+      <StarfieldCanvas count={50} opacity={0.35} />
 
       {/* Persistent Mission Context Bar */}
       <MissionContextBar mission={activeMission} activePage="coverage" />
 
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between pb-4 border-b border-space-700/80 gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <Satellite className="w-6 h-6 text-cyan-400" />
-            <h1 className="text-xl sm:text-2xl font-bold font-mono text-white tracking-wide">
+      {/* Hero Visual Banner with Earth Sensor Swath & Footprint */}
+      <div className="relative rounded-2xl overflow-hidden border border-space-700 p-6 sm:p-8 shadow-2xl">
+        <div
+          className="absolute inset-0 space-bg-hero"
+          style={{
+            backgroundImage: `url(${coverageBgImg})`,
+            backgroundPosition: 'center 40%',
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-space-950 via-space-950/85 to-space-950/50" />
+        <div className="absolute inset-0 bg-gradient-to-t from-space-950 via-transparent to-space-950/30" />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs">
+              <Signal className="w-4 h-4" />
+              <span>CONSTELLATION & GROUND GEOMETRY</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold font-mono text-white tracking-wide mt-1">
               Coverage Intelligence Agent
             </h1>
-          </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Ground track geometry, swath access footprint & revisit intervals for {target.area || "Target Area"}, {target.country || "Country"}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-space-900 border border-space-700 font-mono text-xs text-slate-300">
-            <Database className="w-4 h-4 text-cyan-400" />
-            <span>Model: <strong className="text-white">Deterministic Swath Geometry</strong></span>
+            <p className="text-xs sm:text-sm text-slate-300 font-mono mt-1 max-w-2xl leading-relaxed">
+              Ground track revisit windows, optical/RF swath geometry, and slant-range elevation masks for {target.area || "Target Area"}, {target.country || "Country"}.
+            </p>
           </div>
 
-          <button
-            type="button"
-            disabled={isRunning}
-            onClick={() => runSingleAgent('coverage')}
-            className="px-4 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-mono text-xs font-bold flex items-center gap-1.5 shadow-md shadow-cyan-500/20 transition cursor-pointer disabled:opacity-50"
-          >
-            {isRunning ? (
-              <>
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                <span>Analyzing...</span>
-              </>
-            ) : (
-              <>
-                <Play className="w-3.5 h-3.5 fill-current" />
-                <span>Run Coverage Analysis</span>
-              </>
-            )}
-          </button>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-space-900/90 border border-space-700 font-mono text-xs text-slate-300 backdrop-blur-md">
+              <Database className="w-4 h-4 text-cyan-400" />
+              <span>Model: <strong className="text-white">Deterministic Swath Geometry</strong></span>
+            </div>
+
+            <button
+              type="button"
+              disabled={isRunning}
+              onClick={() => runSingleAgent('coverage')}
+              className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-mono text-xs font-bold flex items-center justify-center gap-1.5 shadow-lg shadow-cyan-500/25 transition cursor-pointer disabled:opacity-50"
+            >
+              {isRunning ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>Computing Swath Access...</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <span>Run Coverage Analysis</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-4">
-          <span className="text-[10px] font-mono uppercase text-slate-400 block">Target Coverage</span>
+        <div className="hud-card hud-corner-ticks p-4">
+          <span className="text-[10px] font-mono uppercase text-slate-400 block font-semibold">Target Coverage</span>
           <span className="text-2xl font-mono font-bold text-cyan-300 mt-1 block">
             {coverage.coverage_percent ?? (status === 'COMPLETED' ? 93.8 : '—')}%
           </span>
-          <span className="text-[10px] text-slate-500 font-mono">Goal: {target.coverage_requirement || 80}%</span>
+          <span className="text-[10px] text-slate-400 font-mono">Goal: {target.coverage_requirement || 80}%</span>
         </div>
 
-        <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-4">
-          <span className="text-[10px] font-mono uppercase text-slate-400 block">Population Reach</span>
+        <div className="hud-card hud-corner-ticks p-4">
+          <span className="text-[10px] font-mono uppercase text-slate-400 block font-semibold">Population Reach</span>
           <span className="text-2xl font-mono font-bold text-white mt-1 block">
             {coverage.population_served_formatted || (status === 'COMPLETED' ? '18.4M' : '—')}
           </span>
-          <span className="text-[10px] text-slate-500 font-mono">Demographic access footprint</span>
+          <span className="text-[10px] text-slate-400 font-mono">Demographic access footprint</span>
         </div>
 
-        <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-4">
-          <span className="text-[10px] font-mono uppercase text-slate-400 block">Coverage Gaps</span>
+        <div className="hud-card hud-corner-ticks p-4">
+          <span className="text-[10px] font-mono uppercase text-slate-400 block font-semibold">Coverage Gaps</span>
           <span className="text-2xl font-mono font-bold text-amber-400 mt-1 block">
             {coverage.coverage_gaps ?? (status === 'COMPLETED' ? 1 : '—')} intervals
           </span>
-          <span className="text-[10px] text-slate-500 font-mono">Off-nadir blind windows</span>
+          <span className="text-[10px] text-slate-400 font-mono">Off-nadir blind windows</span>
         </div>
 
-        <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-4">
-          <span className="text-[10px] font-mono uppercase text-slate-400 block">Mean Revisit Time</span>
+        <div className="hud-card hud-corner-ticks p-4">
+          <span className="text-[10px] font-mono uppercase text-slate-400 block font-semibold">Mean Revisit Time</span>
           <span className="text-2xl font-mono font-bold text-emerald-400 mt-1 block">
             {coverage.revisit_time_minutes ?? (status === 'COMPLETED' ? 110 : '—')} min
           </span>
-          <span className="text-[10px] text-slate-500 font-mono">{orbit.altitude_km || 550}km orbit period</span>
+          <span className="text-[10px] text-slate-400 font-mono">{orbit.altitude_km || 550}km orbit period</span>
         </div>
       </div>
 
       {/* Assessment Summary */}
-      <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-5 shadow-lg">
+      <div className="hud-card hud-corner-ticks p-5 shadow-lg">
         <h3 className="text-xs font-mono uppercase font-bold text-cyan-400 mb-2 flex items-center gap-1.5">
           <Info className="w-4 h-4" />
           Coverage Footprint & Ground Revisit Analysis for {target.area || "Target Area"}
         </h3>
-        <p className="text-sm text-slate-200 leading-relaxed mb-3">
+        <p className="text-sm text-slate-200 font-mono leading-relaxed mb-3">
           {coverage.summary || `Coverage sensor swath modeling configured for ${target.area}, ${target.region}, ${target.country} (${target.latitude}° N, ${target.longitude}° E).`}
         </p>
 
@@ -120,31 +136,31 @@ export default function CoverageAnalysis() {
               </div>
             ))
           ) : (
-            <div className="text-slate-500 italic">Click "Run Coverage Analysis" to compute target swath coverage geometry.</div>
+            <div className="text-slate-400 italic">Click "Run Coverage Analysis" to compute target swath coverage geometry.</div>
           )}
         </div>
       </div>
 
       {/* Target Area Spatial Spec Card */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
-        <div className="bg-space-900 p-4 rounded-xl border border-space-700">
-          <span className="text-[10px] text-slate-400 uppercase block">Target Coordinates</span>
+        <div className="hud-card p-4">
+          <span className="text-[10px] text-slate-400 uppercase block font-semibold">Target Coordinates</span>
           <span className="text-sm font-bold text-white mt-1 block">
             {target.latitude}° N, {target.longitude}° E
           </span>
           <span className="text-[10px] text-cyan-400 mt-1 block">{target.area}, {target.country}</span>
         </div>
 
-        <div className="bg-space-900 p-4 rounded-xl border border-space-700">
-          <span className="text-[10px] text-slate-400 uppercase block">Calculated Swath Width</span>
+        <div className="hud-card p-4">
+          <span className="text-[10px] text-slate-400 uppercase block font-semibold">Calculated Swath Width</span>
           <span className="text-sm font-bold text-white mt-1 block">
             {Math.round((orbit.altitude_km || 550) * 1.85)} km
           </span>
           <span className="text-[10px] text-slate-400 mt-1 block">Coverage radius: {target.coverage_radius_km || 100} km</span>
         </div>
 
-        <div className="bg-space-900 p-4 rounded-xl border border-space-700">
-          <span className="text-[10px] text-slate-400 uppercase block">Ground Track Passes</span>
+        <div className="hud-card p-4">
+          <span className="text-[10px] text-slate-400 uppercase block font-semibold">Ground Track Passes</span>
           <span className="text-sm font-bold text-emerald-400 mt-1 block">
             8 passes / day
           </span>
