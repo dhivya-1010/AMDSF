@@ -17,6 +17,7 @@ class MissionOrchestrator:
     async def execute_mission_analysis(self, req: MissionRequestSchema) -> Dict[str, Any]:
         # Concurrently invoke all 4 independent domain agents with explicit mapping
         debris_task = debris_agent.analyze(
+            mission_id=req.mission_id,
             target_orbit_km=req.orbit.altitude_km,
             inclination_deg=req.orbit.inclination_deg,
             eccentricity=req.orbit.eccentricity,
@@ -26,6 +27,7 @@ class MissionOrchestrator:
         )
         
         weather_task = weather_agent.analyze(
+            mission_id=req.mission_id,
             preferred_date=req.constraints.preferred_launch_date,
             flexibility_days=req.constraints.launch_window_flexibility_days,
             launch_site=req.launch.site,
@@ -33,6 +35,7 @@ class MissionOrchestrator:
         )
         
         feasibility_task = feasibility_agent.analyze(
+            mission_id=req.mission_id,
             payload_mass=req.mission.payload_mass_kg,
             target_orbit=req.orbit.altitude_km,
             mission_duration=req.mission.duration_days,
@@ -42,6 +45,7 @@ class MissionOrchestrator:
         )
         
         coverage_task = coverage_agent.analyze(
+            mission_id=req.mission_id,
             target_country=req.target.country,
             target_region=req.target.region,
             target_area=req.target.area,
@@ -69,6 +73,7 @@ class MissionOrchestrator:
         )
 
         return {
+            "mission_id": req.mission_id,
             "mission_definition": req.model_dump(),
             "mission": {
                 "mission_name": req.mission_name,

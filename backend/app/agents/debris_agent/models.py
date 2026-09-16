@@ -10,6 +10,7 @@ class DebrisObjectItem(BaseModel):
     inclination_deg: Optional[float] = None
 
 class DebrisAnalysisResult(BaseModel):
+    mission_id: Optional[str] = None
     agent: str = "Orbital Debris Intelligence Agent"
     status: str = "completed"
     objects_analyzed: int
@@ -21,3 +22,4 @@ class DebrisAnalysisResult(BaseModel):
     factors: List[str]
     orbital_objects: List[DebrisObjectItem]
     details: Dict[str, Any]
+    timestamp: Optional[str] = None

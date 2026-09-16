@@ -1,12 +1,28 @@
 import React from 'react';
-import { SunMedium, Zap, Radio, Info, Database, Activity, AlertCircle } from 'lucide-react';
+import { SunMedium, Zap, Radio, Info, Database, Activity, AlertCircle, RefreshCw, Play } from 'lucide-react';
+import { useMission } from '../context/MissionContext';
+import MissionContextBar from '../components/MissionContextBar';
+import NoActiveMissionState from '../components/NoActiveMissionState';
 
-export default function SpaceWeather({ weatherData }) {
-  const weather = weatherData || {};
+export default function SpaceWeather() {
+  const { activeMission, analysisResults, analysisStatus, runSingleAgent } = useMission();
+
+  if (!activeMission) {
+    return <NoActiveMissionState pageTitle="Space Weather Intelligence" />;
+  }
+
+  const weather = analysisResults?.weather || {};
   const recentEvents = weather.recent_events || [];
+  const launchSite = activeMission.launch?.site || "Launch Site";
+  const prefDate = activeMission.constraints?.preferred_launch_date || "2026-10-15";
+  const status = analysisStatus?.weather || 'NOT_RUN';
+  const isRunning = status === 'RUNNING';
 
   return (
     <div className="space-y-6">
+
+      {/* Persistent Mission Context Bar */}
+      <MissionContextBar mission={activeMission} activePage="weather" />
 
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between pb-4 border-b border-space-700/80 gap-4">
@@ -18,13 +34,34 @@ export default function SpaceWeather({ weatherData }) {
             </h1>
           </div>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Heliophysics dynamics, planetary Kp geomagnetic index & solar flare coronal monitoring
+            Heliophysics dynamics, planetary Kp geomagnetic index & solar flare monitoring for launch at {launchSite} on {prefDate}
           </p>
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-space-900 border border-space-700 font-mono text-xs text-slate-300">
-          <Database className="w-4 h-4 text-cyan-400" />
-          <span>Data Sources: <strong className="text-white">NASA DONKI • NOAA SWPC</strong></span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-space-900 border border-space-700 font-mono text-xs text-slate-300">
+            <Database className="w-4 h-4 text-cyan-400" />
+            <span>Data Sources: <strong className="text-white">NOAA SWPC • NASA DONKI</strong></span>
+          </div>
+
+          <button
+            type="button"
+            disabled={isRunning}
+            onClick={() => runSingleAgent('weather')}
+            className="px-4 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-mono text-xs font-bold flex items-center gap-1.5 shadow-md shadow-cyan-500/20 transition cursor-pointer disabled:opacity-50"
+          >
+            {isRunning ? (
+              <>
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                <span>Analyzing...</span>
+              </>
+            ) : (
+              <>
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Run Weather Analysis</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
 
@@ -33,33 +70,33 @@ export default function SpaceWeather({ weatherData }) {
         <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-4">
           <span className="text-[10px] font-mono uppercase text-slate-400 block">Planetary Kp-Index</span>
           <span className="text-2xl font-mono font-bold text-cyan-300 mt-1 block">
-            {weather.kp_index || 3.2}
+            {weather.kp_index ?? (status === 'COMPLETED' ? 3.2 : '—')}
           </span>
           <span className="text-[10px] text-slate-500 font-mono">Quiet threshold &lt; 4.0</span>
         </div>
 
         <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-4">
           <span className="text-[10px] font-mono uppercase text-slate-400 block">Solar Activity</span>
-          <span className="text-2xl font-mono font-bold text-emerald-400 mt-1 block">
-            {weather.solar_activity?.split('/')[0] || 'QUIET'}
+          <span className="text-2xl font-mono font-bold text-emerald-400 mt-1 block truncate">
+            {weather.solar_activity ? weather.solar_activity.split('/')[0] : (status === 'COMPLETED' ? 'QUIET' : '—')}
           </span>
-          <span className="text-[10px] text-slate-500 font-mono">GOES X-ray background flux</span>
+          <span className="text-[10px] text-slate-500 font-mono">GOES X-ray baseline flux</span>
         </div>
 
         <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-4">
-          <span className="text-[10px] font-mono uppercase text-slate-400 block">CME Activity Detected</span>
+          <span className="text-[10px] font-mono uppercase text-slate-400 block">CME Activity</span>
           <span className="text-2xl font-mono font-bold text-amber-400 mt-1 block">
-            {weather.cme_activity ? 'YES (Active)' : 'NONE'}
+            {weather.cme_activity !== undefined ? (weather.cme_activity ? 'YES (Active)' : 'NONE') : (status === 'COMPLETED' ? 'YES' : '—')}
           </span>
-          <span className="text-[10px] text-slate-500 font-mono">SOHO / LASCO Catalog</span>
+          <span className="text-[10px] text-slate-500 font-mono">SOHO / LASCO Telemetry</span>
         </div>
 
         <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-4">
-          <span className="text-[10px] font-mono uppercase text-slate-400 block">Geomagnetic Storm Status</span>
+          <span className="text-[10px] font-mono uppercase text-slate-400 block">Geomagnetic Storm</span>
           <span className="text-2xl font-mono font-bold text-emerald-400 mt-1 block">
-            {weather.geomagnetic_storm ? 'G1+ STORM' : 'NOMINAL'}
+            {weather.geomagnetic_storm !== undefined ? (weather.geomagnetic_storm ? 'G1+ STORM' : 'NOMINAL') : (status === 'COMPLETED' ? 'NOMINAL' : '—')}
           </span>
-          <span className="text-[10px] text-slate-500 font-mono">Ionospheric drag state</span>
+          <span className="text-[10px] text-slate-500 font-mono">Ionospheric drag status</span>
         </div>
       </div>
 
@@ -67,19 +104,23 @@ export default function SpaceWeather({ weatherData }) {
       <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-5 shadow-lg">
         <h3 className="text-xs font-mono uppercase font-bold text-cyan-400 mb-2 flex items-center gap-1.5">
           <Info className="w-4 h-4" />
-          Space Weather Evaluation & Atmospheric Drag Assessment
+          Space Weather Evaluation for {launchSite}
         </h3>
         <p className="text-sm text-slate-200 leading-relaxed mb-3">
-          {weather.summary}
+          {weather.summary || `Space weather analysis initialized for launch facility at ${launchSite} on candidate epoch ${prefDate}.`}
         </p>
 
         <div className="space-y-1.5 pt-3 border-t border-space-800 text-xs text-slate-300 font-mono">
-          {weather.factors?.map((f, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-              <span>{f}</span>
-            </div>
-          ))}
+          {weather.factors && weather.factors.length > 0 ? (
+            weather.factors.map((f, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                <span>{f}</span>
+              </div>
+            ))
+          ) : (
+            <div className="text-slate-500 italic">Click "Run Weather Analysis" to query live NOAA/DONKI conditions.</div>
+          )}
         </div>
       </div>
 
@@ -90,7 +131,7 @@ export default function SpaceWeather({ weatherData }) {
             <Zap className="w-4 h-4 text-amber-400" />
             NASA DONKI Recent CME Notifications
           </h3>
-          <span className="text-xs font-mono text-slate-400">{recentEvents.length} Events In Observation Window</span>
+          <span className="text-xs font-mono text-slate-400">{recentEvents.length} Events in Epoch Window</span>
         </div>
 
         {recentEvents.length > 0 ? (
@@ -102,7 +143,7 @@ export default function SpaceWeather({ weatherData }) {
                   <span className="text-slate-400 font-normal text-[11px]">{evt.startTime || 'Recent'}</span>
                 </div>
                 <p className="text-slate-300 text-[11px] leading-relaxed mt-1">
-                  {evt.note || 'Coronal mass ejection observed with negligible Earth-directed geo-effective impact.'}
+                  {evt.note || 'Coronal mass ejection observed with negligible Earth-directed impact.'}
                 </p>
                 {evt.associated_flare && (
                   <div className="mt-2 text-[10px] text-amber-300">
@@ -113,11 +154,11 @@ export default function SpaceWeather({ weatherData }) {
             ))}
           </div>
         ) : (
-          <p className="text-xs text-slate-400 font-mono italic">No critical CME events active in current observation window.</p>
+          <p className="text-xs text-slate-400 font-mono italic">No severe CME events active in current observation window.</p>
         )}
       </div>
 
-      {/* Atmospheric Drag & Telemetry Parameters */}
+      {/* Atmospheric Drag & Launch Telemetry Parameters */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
         <div className="bg-space-900 p-4 rounded-xl border border-space-700">
           <span className="text-[10px] text-slate-400 uppercase block">Solar Wind Velocity</span>
@@ -140,7 +181,7 @@ export default function SpaceWeather({ weatherData }) {
           <span className="text-lg font-bold text-white mt-1 block">
             {weather.details?.estimated_atmospheric_drag || '1.02x'}
           </span>
-          <span className="text-[10px] text-slate-400 mt-1 block">Negligible orbit decay delta</span>
+          <span className="text-[10px] text-slate-400 mt-1 block">Negligible launch ascent decay</span>
         </div>
       </div>
 

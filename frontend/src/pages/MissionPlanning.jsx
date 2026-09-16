@@ -1,15 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Sliders, Play, RefreshCw, Layers, CheckCircle2, ChevronRight,
   ChevronLeft, Compass, Globe2, Rocket, Award, ShieldAlert,
   HelpCircle, AlertCircle, MapPin
 } from 'lucide-react';
+import { useMission } from '../context/MissionContext';
 import LoadingState from '../components/LoadingState';
 import ErrorState from '../components/ErrorState';
 
 // Curated geographic regions & spaceports dataset
 const CURATED_TARGETS = {
+  "China": {
+    "Beijing": [
+      { name: "Beijing Metropolitan Area", lat: 39.9042, lng: 116.4074 },
+      { name: "Haidian Science & Technology Park", lat: 39.9593, lng: 116.2981 }
+    ],
+    "Shanghai": [
+      { name: "Pudong Financial & Maritime Port", lat: 31.2304, lng: 121.4737 },
+      { name: "Yangtze River Delta Economic Zone", lat: 31.2990, lng: 120.5853 }
+    ],
+    "Guangdong": [
+      { name: "Shenzhen High-Tech Corridor", lat: 22.5431, lng: 114.0579 },
+      { name: "Guangzhou Pearl River Delta", lat: 23.1291, lng: 113.2644 }
+    ]
+  },
   "India": {
     "Tamil Nadu": [
       { name: "Chennai Metropolitan Region", lat: 13.0827, lng: 80.2707 },
@@ -33,6 +48,10 @@ const CURATED_TARGETS = {
     "California": [
       { name: "Silicon Valley / Bay Area", lat: 37.3861, lng: -122.0839 },
       { name: "Los Angeles Aerospace Basin", lat: 34.0522, lng: -118.2437 }
+    ],
+    "Texas": [
+      { name: "Houston Spaceport & Energy Corridor", lat: 29.7604, lng: -95.3698 },
+      { name: "Austin Innovation Basin", lat: 30.2672, lng: -97.7431 }
     ]
   },
   "Europe": {
@@ -43,6 +62,21 @@ const CURATED_TARGETS = {
     "Germany": [
       { name: "Darmstadt Space Operations Node", lat: 49.8728, lng: 8.6512 },
       { name: "Munich High-Tech Cluster", lat: 48.1351, lng: 11.5820 }
+    ],
+    "United Kingdom": [
+      { name: "London Metropolitan Area", lat: 51.5074, lng: -0.1278 },
+      { name: "Harwell Space Science Cluster", lat: 51.5728, lng: -1.3142 }
+    ]
+  },
+  "Japan": {
+    "Kanto": [
+      { name: "Tokyo Metropolitan Area", lat: 35.6762, lng: 139.6503 },
+      { name: "Tsukuba Space Center Node", lat: 36.0645, lng: 140.1272 }
+    ]
+  },
+  "Custom / Other": {
+    "Manual Coordinates": [
+      { name: "Custom Observation Point", lat: 0.0, lng: 0.0 }
     ]
   }
 };
@@ -58,51 +92,88 @@ const CURATED_LAUNCH_SITES = {
   ],
   "Europe / ESA": [
     { name: "Guiana Space Centre, Kourou (ELA-4 / ZLV)", code: "KOUROU", country: "France / ESA" }
+  ],
+  "Japan": [
+    { name: "Tanegashima Space Center (Yoshinobu Launch Complex)", code: "TNSC", country: "Japan" }
+  ],
+  "China": [
+    { name: "Jiuquan Satellite Launch Center (SLS-1 / SLS-2)", code: "JSLC", country: "China" },
+    { name: "Wenchang Space Launch Site (LC-101 / LC-201)", code: "WSLS", country: "China" }
+  ],
+  "Custom / International": [
+    { name: "Autonomous Sea Launch Platform", code: "SEA_LAUNCH", country: "International Waters" },
+    { name: "Custom Spaceport Facility", code: "CUSTOM_SITE", country: "Custom" }
   ]
 };
 
-export default function MissionPlanning({ onRunAnalysis, loading, error }) {
+export default function MissionPlanning() {
   const navigate = useNavigate();
+  const { activeMission, runFullAnalysis, loading, error } = useMission();
   const [step, setStep] = useState(1);
 
   // Complete Structured Mission Definition State
-  const [form, setForm] = useState({
-    // Step 1: Objective
-    mission_name: 'AMDSF Earth Observation Mission',
-    objective_type: 'EARTH_OBSERVATION',
-    objective_description: 'High-resolution optical and infrared earth observation for coastal environmental monitoring and infrastructure analysis.',
-    
-    // Step 2: Target
-    target_country: 'India',
-    target_region: 'Tamil Nadu',
-    target_area: 'Chennai Metropolitan Region',
-    target_latitude: 13.0827,
-    target_longitude: 80.2707,
-    coverage_requirement: 80,
-    coverage_radius_km: 100,
-
-    // Step 3: Launch
-    launch_country: 'India',
-    launch_site: 'Satish Dhawan Space Centre — Sriharikota',
-    launch_site_code: 'SDSC_SHAR',
-    launch_vehicle: 'AUTO',
-
-    // Step 4: Orbit
-    orbit_type: 'LEO',
-    altitude_km: 550,
-    inclination_deg: 97.6,
-    eccentricity: 0.0,
-    raan: 'Auto',
-    arg_perigee: 'Auto',
-
-    // Step 5: Constraints & Lifecycle
-    duration_days: 365,
-    payload_mass_kg: 250,
-    budget_musd: 50,
-    preferred_launch_date: '2026-10-15',
-    preferred_launch_time: '10:30 UTC',
-    maximum_acceptable_risk: 'MEDIUM',
-    launch_window_flexibility_days: 3
+  const [form, setForm] = useState(() => {
+    if (activeMission) {
+      return {
+        mission_name: activeMission.mission_name || 'China Earth Observation Mission',
+        objective_type: activeMission.objective?.type || 'EARTH_OBSERVATION',
+        objective_description: activeMission.objective?.description || 'High-resolution optical and infrared earth observation.',
+        target_country: activeMission.target?.country || 'China',
+        target_region: activeMission.target?.region || 'Beijing',
+        target_area: activeMission.target?.area || 'Beijing Metropolitan Area',
+        target_latitude: activeMission.target?.latitude ?? 39.9042,
+        target_longitude: activeMission.target?.longitude ?? 116.4074,
+        coverage_requirement: activeMission.target?.coverage_requirement ?? 80,
+        coverage_radius_km: activeMission.target?.coverage_radius_km ?? 100,
+        launch_country: activeMission.launch?.country || 'India',
+        launch_site: activeMission.launch?.site || 'Satish Dhawan Space Centre — Sriharikota',
+        launch_site_code: activeMission.launch?.launch_site_code || 'SDSC_SHAR',
+        launch_vehicle: activeMission.launch?.vehicle || 'AUTO',
+        orbit_type: activeMission.orbit?.type || 'LEO',
+        altitude_km: activeMission.orbit?.altitude_km ?? 550,
+        inclination_deg: activeMission.orbit?.inclination_deg ?? 97.6,
+        eccentricity: activeMission.orbit?.eccentricity ?? 0.0,
+        raan: activeMission.orbit?.raan || 'Auto',
+        arg_perigee: activeMission.orbit?.arg_perigee || 'Auto',
+        duration_days: activeMission.mission?.duration_days ?? 365,
+        payload_mass_kg: activeMission.mission?.payload_mass_kg ?? 250,
+        budget_musd: activeMission.mission?.budget_musd ?? 50,
+        preferred_launch_date: activeMission.constraints?.preferred_launch_date || '2026-10-15',
+        preferred_launch_time: activeMission.constraints?.preferred_launch_time || '10:30 UTC',
+        maximum_acceptable_risk: activeMission.constraints?.maximum_acceptable_risk || 'MEDIUM',
+        launch_window_flexibility_days: activeMission.constraints?.launch_window_flexibility_days ?? 3
+      };
+    }
+    return {
+      // Default clean starter template (China EO Mission or initial defaults)
+      mission_name: 'China Earth Observation Mission',
+      objective_type: 'EARTH_OBSERVATION',
+      objective_description: 'High-resolution optical and infrared earth observation for environmental monitoring and infrastructure analysis.',
+      target_country: 'China',
+      target_region: 'Beijing',
+      target_area: 'Beijing Metropolitan Area',
+      target_latitude: 39.9042,
+      target_longitude: 116.4074,
+      coverage_requirement: 80,
+      coverage_radius_km: 100,
+      launch_country: 'India',
+      launch_site: 'Satish Dhawan Space Centre — Sriharikota',
+      launch_site_code: 'SDSC_SHAR',
+      launch_vehicle: 'AUTO',
+      orbit_type: 'LEO',
+      altitude_km: 550,
+      inclination_deg: 97.6,
+      eccentricity: 0.0,
+      raan: 'Auto',
+      arg_perigee: 'Auto',
+      duration_days: 365,
+      payload_mass_kg: 250,
+      budget_musd: 50,
+      preferred_launch_date: '2026-10-15',
+      preferred_launch_time: '10:30 UTC',
+      maximum_acceptable_risk: 'MEDIUM',
+      launch_window_flexibility_days: 3
+    };
   });
 
   const [validationErrors, setValidationErrors] = useState([]);
@@ -110,9 +181,9 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
   // Hierarchical Target helpers
   const handleCountryChange = (country) => {
     const regions = CURATED_TARGETS[country] || {};
-    const firstRegion = Object.keys(regions)[0] || '';
+    const firstRegion = Object.keys(regions)[0] || 'Default Region';
     const areas = regions[firstRegion] || [];
-    const firstArea = areas[0] || { name: '', lat: 0, lng: 0 };
+    const firstArea = areas[0] || { name: 'Target Area', lat: 0, lng: 0 };
 
     setForm(prev => ({
       ...prev,
@@ -126,7 +197,7 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
 
   const handleRegionChange = (region) => {
     const areas = CURATED_TARGETS[form.target_country]?.[region] || [];
-    const firstArea = areas[0] || { name: '', lat: 0, lng: 0 };
+    const firstArea = areas[0] || { name: 'Target Area', lat: form.target_latitude, lng: form.target_longitude };
 
     setForm(prev => ({
       ...prev,
@@ -151,7 +222,7 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
 
   const handleLaunchCountryChange = (country) => {
     const sites = CURATED_LAUNCH_SITES[country] || [];
-    const firstSite = sites[0] || { name: '', code: 'OTHER' };
+    const firstSite = sites[0] || { name: 'Custom Site', code: 'SITE_01' };
     setForm(prev => ({
       ...prev,
       launch_country: country,
@@ -187,7 +258,11 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
       if (form.coverage_requirement <= 0 || form.coverage_requirement > 100) {
         errors.push("Coverage requirement must be between 1% and 100%.");
       }
+      if (form.coverage_radius_km <= 0) {
+        errors.push("Coverage radius must be greater than 0 km.");
+      }
     } else if (step === 3) {
+      if (!form.launch_country) errors.push("Launch country is required.");
       if (!form.launch_site) errors.push("Launch site is required.");
     } else if (step === 4) {
       if (form.altitude_km < 180 || form.altitude_km > 36000) {
@@ -263,8 +338,8 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
       }
     };
 
-    const success = await onRunAnalysis(requestPayload);
-    if (success) {
+    const res = await runFullAnalysis(requestPayload);
+    if (res) {
       navigate('/recommendation');
     }
   };
@@ -279,68 +354,76 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="space-y-6 max-w-4xl mx-auto">
 
       {/* Header */}
       <div className="pb-4 border-b border-space-700/80">
-        <h1 className="text-xl sm:text-2xl font-bold font-mono text-white tracking-wide flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <Sliders className="w-6 h-6 text-cyan-400" />
-          Mission Definition & Parameter Configuration
-        </h1>
+          <h1 className="text-xl sm:text-2xl font-bold font-mono text-white tracking-wide">
+            Mission Planning & Multi-Agent Orchestration
+          </h1>
+        </div>
         <p className="text-xs sm:text-sm text-slate-400 mt-1">
-          Define hierarchical target geometry, spaceport staging, and orbital constraints for multi-agent reasoning.
+          Define full mission parameters across all 6 steps before dispatching to autonomous domain agents.
         </p>
       </div>
 
-      {/* Step Progress Bar */}
-      <div className="bg-space-900 border border-space-800 rounded-xl p-3.5">
-        <div className="flex items-center justify-between overflow-x-auto gap-2">
+      {/* Stepper Progress Bar */}
+      <div className="bg-space-900/90 border border-space-700/80 rounded-xl p-4 shadow-lg">
+        <div className="flex items-center justify-between">
           {stepsList.map((s, idx) => (
             <React.Fragment key={s.num}>
-              <div
-                onClick={() => { if (s.num < step) setStep(s.num); }}
-                className={`flex items-center gap-2 cursor-pointer font-mono text-xs whitespace-nowrap transition ${
-                  step === s.num
-                    ? 'text-cyan-400 font-bold'
-                    : step > s.num
-                    ? 'text-slate-300 hover:text-white'
-                    : 'text-slate-600 cursor-not-allowed'
-                }`}
-              >
-                <span
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold ${
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (s.num < step) setStep(s.num);
+                  }}
+                  className={`w-7 h-7 rounded-full flex items-center justify-center font-mono text-xs font-bold transition ${
                     step === s.num
                       ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30'
                       : step > s.num
                       ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                      : 'bg-space-800 text-slate-500 border border-space-700'
+                      : 'bg-space-850 text-slate-500 border border-space-700'
                   }`}
                 >
                   {step > s.num ? '✓' : s.num}
+                </button>
+                <span className={`text-xs font-mono hidden sm:inline ${
+                  step === s.num ? 'text-cyan-300 font-bold' : step > s.num ? 'text-slate-300' : 'text-slate-500'
+                }`}>
+                  {s.title}
                 </span>
-                <span className="hidden sm:inline">{s.title}</span>
               </div>
               {idx < stepsList.length - 1 && (
-                <div className={`h-[1px] flex-1 min-w-[12px] ${step > s.num ? 'bg-emerald-500/40' : 'bg-space-800'}`}></div>
+                <div className={`flex-1 h-0.5 mx-2 ${
+                  step > s.num ? 'bg-cyan-500/60' : 'bg-space-800'
+                }`} />
               )}
             </React.Fragment>
           ))}
         </div>
       </div>
 
-      {loading && <LoadingState message="Orchestrating 4 Specialized Domain Agents..." />}
-      {error && <ErrorState error={error} />}
-
-      {/* Validation Errors Box */}
+      {/* Validation Errors Notice */}
       {validationErrors.length > 0 && (
-        <div className="bg-rose-500/10 border border-rose-500/30 rounded-xl p-4 font-mono text-xs text-rose-300 space-y-1">
-          <div className="font-bold flex items-center gap-1.5 text-rose-400 mb-1">
-            <AlertCircle className="w-4 h-4" />
-            <span>Please resolve the following required fields:</span>
+        <div className="bg-rose-950/40 border border-rose-500/50 rounded-xl p-4 text-xs font-mono text-rose-300 space-y-1">
+          <div className="font-bold flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-rose-400" />
+            <span>Please complete all required fields before proceeding:</span>
           </div>
-          {validationErrors.map((err, i) => (
-            <div key={i} className="pl-5">• {err}</div>
-          ))}
+          <ul className="list-disc list-inside space-y-0.5 pl-2 text-rose-200">
+            {validationErrors.map((err, i) => (
+              <li key={i}>{err}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {error && (
+        <div className="bg-rose-950/40 border border-rose-500/50 rounded-xl p-4 text-xs font-mono text-rose-300">
+          {error}
         </div>
       )}
 
@@ -353,50 +436,55 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
               <span className="text-slate-500">—</span>
               <span className="text-white">Mission Objective & Overview</span>
             </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Establish core mission identification and high-level operational domain.
+            </p>
           </div>
 
-          <div>
-            <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
-              Mission Name *
-            </label>
-            <input
-              type="text"
-              value={form.mission_name}
-              onChange={(e) => setForm({ ...form, mission_name: e.target.value })}
-              className="w-full bg-space-850 border border-space-700 rounded-lg px-3.5 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-cyan-400 transition"
-              placeholder="e.g. AMDSF Earth Observation Sentinel"
-            />
-          </div>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+                Mission Name *
+              </label>
+              <input
+                type="text"
+                value={form.mission_name}
+                onChange={(e) => setForm({ ...form, mission_name: e.target.value })}
+                placeholder="e.g. China Earth Observation Mission or India Communication Mission"
+                className="w-full bg-space-850 border border-space-700 rounded-lg px-3.5 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-400 transition"
+              />
+            </div>
 
-          <div>
-            <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
-              Primary Objective Category *
-            </label>
-            <select
-              value={form.objective_type}
-              onChange={(e) => setForm({ ...form, objective_type: e.target.value })}
-              className="w-full bg-space-850 border border-space-700 rounded-lg px-3.5 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-cyan-400 transition"
-            >
-              <option value="EARTH_OBSERVATION">Earth Observation (Optical / SAR / Multispectral)</option>
-              <option value="COMMUNICATION">Communication (Broadband / RF Relay)</option>
-              <option value="WEATHER_MONITORING">Weather & Atmospheric Monitoring</option>
-              <option value="NAVIGATION">Navigation & Timing (PNT Constellation)</option>
-              <option value="SCIENTIFIC_RESEARCH">Scientific Research & Astrophysics</option>
-              <option value="TECH_DEMO">Technology Demonstration / In-Orbit Validation</option>
-            </select>
-          </div>
+            <div>
+              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+                Primary Objective Type *
+              </label>
+              <select
+                value={form.objective_type}
+                onChange={(e) => setForm({ ...form, objective_type: e.target.value })}
+                className="w-full bg-space-850 border border-space-700 rounded-lg px-3.5 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-400 transition"
+              >
+                <option value="EARTH_OBSERVATION">Earth Observation (Optical / SAR / Multispectral)</option>
+                <option value="COMMUNICATION">Satellite Communication & Broadband Relay</option>
+                <option value="WEATHER_MONITORING">Weather & Atmospheric Monitoring</option>
+                <option value="NAVIGATION">Positioning, Navigation & Timing (PNT)</option>
+                <option value="SCIENTIFIC_RESEARCH">Space Science & Heliophysics Research</option>
+                <option value="TECH_DEMONSTRATION">Technology Demonstration & In-Orbit Validation</option>
+              </select>
+            </div>
 
-          <div>
-            <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
-              Mission Description
-            </label>
-            <textarea
-              rows={3}
-              value={form.objective_description}
-              onChange={(e) => setForm({ ...form, objective_description: e.target.value })}
-              className="w-full bg-space-850 border border-space-700 rounded-lg px-3.5 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-cyan-400 transition"
-              placeholder="Operational goals, instrumentation payloads, sensor characteristics..."
-            />
+            <div>
+              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+                Mission Description & Scope
+              </label>
+              <textarea
+                rows="3"
+                value={form.objective_description}
+                onChange={(e) => setForm({ ...form, objective_description: e.target.value })}
+                placeholder="Provide brief mission overview, payload goals, and decision constraints..."
+                className="w-full bg-space-850 border border-space-700 rounded-lg px-3.5 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-400 transition"
+              />
+            </div>
           </div>
         </div>
       )}
@@ -408,10 +496,10 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
             <h2 className="text-sm font-bold font-mono text-cyan-400 uppercase tracking-wider flex items-center gap-2">
               <span>Step 2 of 6</span>
               <span className="text-slate-500">—</span>
-              <span className="text-white">Hierarchical Target Definition</span>
+              <span className="text-white">Target Operational Geography</span>
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Specific target coordinates and observation radius for Coverage Agent swath analysis.
+              Specify ground observation region, precise coordinates, and coverage constraints.
             </p>
           </div>
 
@@ -433,7 +521,7 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
 
             <div>
               <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
-                State / Province / Region *
+                Target State / Region *
               </label>
               <select
                 value={form.target_region}
@@ -462,35 +550,39 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             <div>
               <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
-                Target Latitude (°N) *
+                Target Latitude (° N/S) *
               </label>
               <input
                 type="number"
                 step="0.0001"
+                min="-90"
+                max="90"
                 value={form.target_latitude}
-                onChange={(e) => setForm({ ...form, target_latitude: parseFloat(e.target.value) || 0 })}
+                onChange={(e) => setForm({ ...form, target_latitude: parseFloat(e.target.value) || 0.0 })}
                 className="w-full bg-space-850 border border-space-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-400 transition"
               />
             </div>
 
             <div>
               <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
-                Target Longitude (°E) *
+                Target Longitude (° E/W) *
               </label>
               <input
                 type="number"
                 step="0.0001"
+                min="-180"
+                max="180"
                 value={form.target_longitude}
-                onChange={(e) => setForm({ ...form, target_longitude: parseFloat(e.target.value) || 0 })}
+                onChange={(e) => setForm({ ...form, target_longitude: parseFloat(e.target.value) || 0.0 })}
                 className="w-full bg-space-850 border border-space-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-400 transition"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             <div>
               <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
                 Coverage Requirement (%) *
@@ -519,6 +611,11 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
               />
             </div>
           </div>
+
+          <div className="p-3 bg-space-850/60 rounded-lg border border-space-700/60 text-[11px] font-mono text-slate-400 flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-cyan-400 shrink-0" />
+            <span>Target location specifies ground observation focus. Launch site is configured separately in Step 3.</span>
+          </div>
         </div>
       )}
 
@@ -529,17 +626,17 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
             <h2 className="text-sm font-bold font-mono text-cyan-400 uppercase tracking-wider flex items-center gap-2">
               <span>Step 3 of 6</span>
               <span className="text-slate-500">—</span>
-              <span className="text-white">Launch Site & Spaceport Configuration</span>
+              <span className="text-white">Launch Site & Vehicle Staging</span>
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Specify origin launch complex. Keep distinct from satellite operational target zone.
+              Select supported spaceport facilities and launch vehicle configurations.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
-                Launch Country / Agency *
+                Launch Country *
               </label>
               <select
                 value={form.launch_country}
@@ -554,7 +651,7 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
 
             <div>
               <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
-                Launch Site / Spaceport *
+                Supported Launch Site / Spaceport *
               </label>
               <select
                 value={form.launch_site}
@@ -562,26 +659,40 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
                 className="w-full bg-space-850 border border-space-700 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-400 transition"
               >
                 {(CURATED_LAUNCH_SITES[form.launch_country] || []).map(s => (
-                  <option key={s.code} value={s.name}>{s.name} ({s.code})</option>
+                  <option key={s.name} value={s.name}>{s.name} ({s.code})</option>
                 ))}
               </select>
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
-              Launch Vehicle Staging Model
-            </label>
-            <select
-              value={form.launch_vehicle}
-              onChange={(e) => setForm({ ...form, launch_vehicle: e.target.value })}
-              className="w-full bg-space-850 border border-space-700 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-400 transition"
-            >
-              <option value="AUTO">Auto-Select (Optimized by Feasibility Agent based on payload mass & Delta-V)</option>
-              <option value="SMALL_LIFT">AeroSpace Small-Lift I (PSLV-Class, up to 350kg)</option>
-              <option value="MEDIUM_LIFT">AeroSpace Medium-Lift IV (GSLV/Falcon-Class, up to 1500kg)</option>
-              <option value="HEAVY_LIFT">AeroSpace Heavy-Lift Booster (LVM3/Heavy-Class, up to 5000kg)</option>
-            </select>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div>
+              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+                Assigned Vehicle Class
+              </label>
+              <select
+                value={form.launch_vehicle}
+                onChange={(e) => setForm({ ...form, launch_vehicle: e.target.value })}
+                className="w-full bg-space-850 border border-space-700 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-400 transition"
+              >
+                <option value="AUTO">Auto Select (Optimized by Feasibility Agent)</option>
+                <option value="AeroSpace Small-Lift I">AeroSpace Small-Lift I (0 - 350 kg)</option>
+                <option value="AeroSpace Medium-Lift IV">AeroSpace Medium-Lift IV (350 - 1500 kg)</option>
+                <option value="AeroSpace Heavy Booster">AeroSpace Heavy Booster (1500+ kg)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
+                Site Facility Code
+              </label>
+              <input
+                type="text"
+                readOnly
+                value={form.launch_site_code}
+                className="w-full bg-space-850/50 border border-space-700 rounded-lg px-3 py-2 text-sm text-slate-400 font-mono"
+              />
+            </div>
           </div>
         </div>
       )}
@@ -593,10 +704,10 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
             <h2 className="text-sm font-bold font-mono text-cyan-400 uppercase tracking-wider flex items-center gap-2">
               <span>Step 4 of 6</span>
               <span className="text-slate-500">—</span>
-              <span className="text-white">Orbital Parameters & Mechanics</span>
+              <span className="text-white">Orbital Architecture</span>
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Utilized by Debris Agent (conjunctions) and Coverage Agent (revisit geometry).
+              Configure altitude, orbital inclination, and eccentricity parameters.
             </p>
           </div>
 
@@ -610,10 +721,10 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
                 onChange={(e) => setForm({ ...form, orbit_type: e.target.value })}
                 className="w-full bg-space-850 border border-space-700 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-400 transition"
               >
-                <option value="LEO">Low Earth Orbit (LEO)</option>
-                <option value="SSO">Sun-Synchronous Orbit (SSO)</option>
-                <option value="MEO">Medium Earth Orbit (MEO)</option>
-                <option value="GEO">Geostationary Orbit (GEO)</option>
+                <option value="LEO">LEO — Low Earth Orbit (180 - 1,200 km)</option>
+                <option value="SSO">SSO — Sun-Synchronous Orbit (500 - 900 km)</option>
+                <option value="MEO">MEO — Medium Earth Orbit (2,000 - 20,000 km)</option>
+                <option value="GEO">GEO — Geostationary Orbit (35,786 km)</option>
               </select>
             </div>
 
@@ -632,10 +743,10 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             <div>
               <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
-                Orbital Inclination (degrees) *
+                Inclination (Degrees) *
               </label>
               <input
                 type="number"
@@ -650,13 +761,13 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
 
             <div>
               <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
-                Eccentricity (0.0 = Circular)
+                Eccentricity
               </label>
               <input
                 type="number"
-                step="0.0001"
+                step="0.001"
                 min="0"
-                max="0.9"
+                max="0.99"
                 value={form.eccentricity}
                 onChange={(e) => setForm({ ...form, eccentricity: parseFloat(e.target.value) || 0.0 })}
                 className="w-full bg-space-850 border border-space-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-400 transition"
@@ -673,10 +784,10 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
             <h2 className="text-sm font-bold font-mono text-cyan-400 uppercase tracking-wider flex items-center gap-2">
               <span>Step 5 of 6</span>
               <span className="text-slate-500">—</span>
-              <span className="text-white">Mission Constraints & Lifecycle</span>
+              <span className="text-white">Payload, Budget & Constraints</span>
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Passed to Feasibility Agent, Space Weather Agent, and Mission Orchestrator.
+              Set mass constraints, financial allocation, and candidate launch timing windows.
             </p>
           </div>
 
@@ -687,8 +798,8 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
               </label>
               <input
                 type="number"
-                min="10"
-                max="10000"
+                min="1"
+                max="25000"
                 value={form.payload_mass_kg}
                 onChange={(e) => setForm({ ...form, payload_mass_kg: parseFloat(e.target.value) || 250 })}
                 className="w-full bg-space-850 border border-space-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-400 transition"
@@ -724,7 +835,7 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
             <div>
               <label className="block text-xs font-mono text-slate-300 font-semibold mb-1.5 uppercase">
                 Preferred Launch Date *
@@ -785,7 +896,7 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
             <div className="bg-space-850 p-4 rounded-xl border border-space-700 space-y-2">
-              <div className="text-[10px] text-slate-400 uppercase font-bold text-cyan-400">Mission Overview</div>
+              <div className="text-[10px] uppercase font-bold text-cyan-400">Mission Overview</div>
               <div className="text-sm font-bold text-white">{form.mission_name}</div>
               <div className="text-slate-300">Objective: <strong className="text-white">{form.objective_type}</strong></div>
               <div className="text-slate-300">Duration: <strong className="text-white">{form.duration_days} days</strong></div>
@@ -793,7 +904,7 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
             </div>
 
             <div className="bg-space-850 p-4 rounded-xl border border-space-700 space-y-2">
-              <div className="text-[10px] text-slate-400 uppercase font-bold text-cyan-400">Target Location</div>
+              <div className="text-[10px] uppercase font-bold text-cyan-400">Target Location</div>
               <div className="text-sm font-bold text-white">{form.target_area}, {form.target_region}</div>
               <div className="text-slate-300">Coordinates: <strong className="text-white">{form.target_latitude}° N, {form.target_longitude}° E</strong></div>
               <div className="text-slate-300">Coverage Goal: <strong className="text-cyan-300">{form.coverage_requirement}% (Radius: {form.coverage_radius_km}km)</strong></div>
@@ -801,7 +912,7 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
             </div>
 
             <div className="bg-space-850 p-4 rounded-xl border border-space-700 space-y-2">
-              <div className="text-[10px] text-slate-400 uppercase font-bold text-cyan-400">Launch Configuration</div>
+              <div className="text-[10px] uppercase font-bold text-cyan-400">Launch Configuration</div>
               <div className="text-sm font-bold text-white">{form.launch_site}</div>
               <div className="text-slate-300">Site Code: <strong className="text-white">{form.launch_site_code}</strong></div>
               <div className="text-slate-300">Vehicle Assignment: <strong className="text-white">{form.launch_vehicle}</strong></div>
@@ -809,7 +920,7 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
             </div>
 
             <div className="bg-space-850 p-4 rounded-xl border border-space-700 space-y-2">
-              <div className="text-[10px] text-slate-400 uppercase font-bold text-cyan-400">Orbital & Payload Specs</div>
+              <div className="text-[10px] uppercase font-bold text-cyan-400">Orbital & Payload Specs</div>
               <div className="text-sm font-bold text-white">{form.orbit_type} — {form.altitude_km} km</div>
               <div className="text-slate-300">Inclination: <strong className="text-white">{form.inclination_deg}°</strong> | Eccentricity: <strong className="text-white">{form.eccentricity}</strong></div>
               <div className="text-slate-300">Payload Wet Mass: <strong className="text-white">{form.payload_mass_kg} kg</strong></div>
@@ -836,7 +947,7 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
           <button
             type="button"
             onClick={handleNext}
-            className="px-6 py-2.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-mono font-bold flex items-center gap-1.5 shadow-md shadow-cyan-500/20 transition"
+            className="px-6 py-2.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-mono font-bold flex items-center gap-1.5 shadow-md shadow-cyan-500/20 transition cursor-pointer"
           >
             <span>Next Step</span>
             <ChevronRight className="w-4 h-4" />
@@ -846,7 +957,7 @@ export default function MissionPlanning({ onRunAnalysis, loading, error }) {
             type="button"
             disabled={loading}
             onClick={handleSubmitAnalysis}
-            className="px-8 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 text-sm font-mono font-bold shadow-lg shadow-cyan-500/30 flex items-center gap-2 transition disabled:opacity-50"
+            className="px-8 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 text-sm font-mono font-bold shadow-lg shadow-cyan-500/30 flex items-center gap-2 transition disabled:opacity-50 cursor-pointer"
           >
             {loading ? (
               <>

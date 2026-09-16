@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional
 
 class FeasibilityAnalysisResult(BaseModel):
+    mission_id: Optional[str] = None
     agent: str = "Mission Feasibility Agent"
     status: str = "completed"
     feasible: bool
@@ -14,3 +15,4 @@ class FeasibilityAnalysisResult(BaseModel):
     factors: List[str]
     propulsion_margin_percent: float
     details: Dict[str, Any]
+    timestamp: Optional[str] = None

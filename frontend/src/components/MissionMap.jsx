@@ -1,7 +1,18 @@
-import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline } from 'react-leaflet';
+import React, { useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+
+// Component to dynamically re-center map when satellite/target coordinates update
+function MapRecenter({ center }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center && center.length === 2 && !isNaN(center[0]) && !isNaN(center[1])) {
+      map.setView(center, 4, { animate: true });
+    }
+  }, [center, map]);
+  return null;
+}
 
 // Fix default Leaflet icon assets if needed
 delete L.Icon.Default.prototype._getIconUrl;
@@ -106,6 +117,9 @@ export default function MissionMap({ mapData, missionName }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           maxZoom={19}
         />
+
+        {/* Dynamic Re-centering on Mission Target Change */}
+        <MapRecenter center={satPos} />
 
         {/* Orbit Ground Track Line */}
         <Polyline

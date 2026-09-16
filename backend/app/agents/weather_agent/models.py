@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional
 
 class WeatherAnalysisResult(BaseModel):
+    mission_id: Optional[str] = None
     agent: str = "Space Weather Intelligence Agent"
     status: str = "completed"
     kp_index: float
@@ -15,3 +16,4 @@ class WeatherAnalysisResult(BaseModel):
     factors: List[str]
     recent_events: List[Dict[str, Any]]
     details: Dict[str, Any]
+    timestamp: Optional[str] = None

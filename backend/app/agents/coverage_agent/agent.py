@@ -1,3 +1,5 @@
+from typing import Optional
+from datetime import datetime
 from .models import CoverageAnalysisResult
 from .analyzer import CoverageAnalyzer
 
@@ -9,6 +11,7 @@ class CoverageAgent:
 
     async def analyze(
         self,
+        mission_id: Optional[str] = None,
         target_country: str = "India",
         target_region: str = "Tamil Nadu",
         target_area: str = "Chennai Metropolitan Region",
@@ -21,7 +24,7 @@ class CoverageAgent:
         mission_duration: int = 365,
         objective_type: str = "EARTH_OBSERVATION"
     ) -> CoverageAnalysisResult:
-        return CoverageAnalyzer.evaluate(
+        result = CoverageAnalyzer.evaluate(
             target_country=target_country,
             target_region=target_region,
             target_area=target_area,
@@ -34,5 +37,8 @@ class CoverageAgent:
             mission_duration=mission_duration,
             objective_type=objective_type
         )
+        result.mission_id = mission_id
+        result.timestamp = datetime.utcnow().isoformat() + "Z"
+        return result
 
 coverage_agent = CoverageAgent()

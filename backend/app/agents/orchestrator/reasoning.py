@@ -1,4 +1,5 @@
 from typing import Dict, Any, List
+from datetime import datetime
 from app.schemas.mission import MissionRequestSchema
 from app.agents.debris_agent.models import DebrisAnalysisResult
 from app.agents.weather_agent.models import WeatherAnalysisResult
@@ -42,7 +43,7 @@ class CrossDomainReasoner:
         readiness = int(debris_weight + weather_weight + feasibility_weight + coverage_weight)
         readiness = min(98, max(35, readiness))
 
-        target_str = f"{mission_req.target.area}, {mission_req.target.region}"
+        target_str = f"{mission_req.target.area}, {mission_req.target.region}, {mission_req.target.country}"
         launch_str = f"{mission_req.launch.site}"
 
         # Decision Arbitration Logic
@@ -53,8 +54,8 @@ class CrossDomainReasoner:
             risk_level = "HIGH"
             reasoning = [
                 f"Financial feasibility constraint violated: Deficit of ${round(feasibility.estimated_cost_m - mission_req.mission.budget_musd, 1)}M",
-                f"Assigned launch vehicle '{feasibility.launch_vehicle}' exceeds budget envelope",
-                f"Orbital debris risk ({debris.risk_level}) and space weather ({weather.risk_level}) are acceptable, but launch staging is constrained"
+                f"Assigned launch vehicle '{feasibility.launch_vehicle}' staging exceeds budget envelope",
+                f"Orbital debris risk ({debris.risk_level}) and space weather ({weather.risk_level}) are acceptable, but launch staging is financially constrained"
             ]
             mitigation = [
                 "Re-evaluate payload instrument wet mass to downscale to lower booster class",
@@ -71,7 +72,7 @@ class CrossDomainReasoner:
                 f"Elevated conjunction hazard detected in proximate orbital shell ({debris.nearby_objects} tracked objects)",
                 f"Space weather conditions from {launch_str} are favorable (Kp {weather.kp_index})",
                 f"Mission configuration is feasible on {feasibility.launch_vehicle} with +{feasibility.propulsion_margin_percent}% Delta-V margin",
-                f"Target coverage requirement ({mission_req.target.coverage_requirement}%) is satisfied ({coverage.coverage_percent}% achieved)"
+                f"Target coverage requirement ({mission_req.target.coverage_requirement}%) is satisfied ({coverage.coverage_percent}% achieved over {mission_req.target.area})"
             ]
             mitigation = [
                 "Schedule secondary radar passes with CelesTrak / LeoLabs 12 hours prior to T-0",
@@ -139,10 +140,13 @@ class CrossDomainReasoner:
             "CCAFS": {"lat": 28.5623, "lng": -80.5774, "name": "Cape Canaveral SFS"},
             "KSC": {"lat": 28.5728, "lng": -80.6490, "name": "Kennedy Space Center"},
             "VANDENBERG": {"lat": 34.6321, "lng": -120.6106, "name": "Vandenberg SFB"},
-            "KOUROU": {"lat": 5.2322, "lng": -52.7606, "name": "Guiana Space Centre, Kourou"}
+            "KOUROU": {"lat": 5.2322, "lng": -52.7606, "name": "Guiana Space Centre, Kourou"},
+            "TNSC": {"lat": 30.4000, "lng": 130.9700, "name": "Tanegashima Space Center"},
+            "JSLC": {"lat": 40.9606, "lng": 100.2983, "name": "Jiuquan Satellite Launch Center"},
+            "WSLS": {"lat": 19.6144, "lng": 110.9511, "name": "Wenchang Space Launch Site"}
         }
         site_code = mission_req.launch.launch_site_code
-        launch_point = launch_site_coords.get(site_code, {"lat": 13.7199, "lng": 80.2304, "name": mission_req.launch.site})
+        launch_point = launch_site_coords.get(site_code, {"lat": 13.7199, "lng": 80.2304, "name": mission_req.launch.site or "Spaceport"})
 
         map_data = {
             "satellite_position": {
@@ -170,6 +174,7 @@ class CrossDomainReasoner:
         }
 
         return OrchestratorResult(
+            mission_id=mission_req.mission_id,
             status="Cross-Domain Reasoning Completed",
             agent_consensus={
                 "orbital_debris": f"{debris.risk_level} Risk ({debris.nearby_objects} nearby)",
@@ -188,5 +193,6 @@ class CrossDomainReasoner:
                 mitigation=mitigation
             ),
             chart_data=chart_data,
-            map_data=map_data
+            map_data=map_data,
+            timestamp=datetime.utcnow().isoformat() + "Z"
         )

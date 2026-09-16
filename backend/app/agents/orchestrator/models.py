@@ -11,6 +11,7 @@ class RecommendationDetails(BaseModel):
     disclaimer: str = "Decision-support prototype only. AMDSF does not directly command or execute spacecraft flight operations."
 
 class OrchestratorResult(BaseModel):
+    mission_id: Optional[str] = None
     status: str = "Cross-Domain Reasoning Completed"
     agent_consensus: Dict[str, str]
     conflicts_detected: List[str]
@@ -18,3 +19,4 @@ class OrchestratorResult(BaseModel):
     recommendation: RecommendationDetails
     chart_data: Dict[str, Any]
     map_data: Dict[str, Any]
+    timestamp: Optional[str] = None
