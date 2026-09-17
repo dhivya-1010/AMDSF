@@ -11,21 +11,21 @@ export default function MissionContextBar({ mission, activePage }) {
   const constraints = mission.constraints || {};
 
   return (
-    <div className="relative bg-space-900/90 border border-space-700/80 rounded-xl p-4 shadow-2xl mb-6 backdrop-blur-md hud-corner-ticks overflow-hidden">
+    <div className="hud-glass hud-corner-ticks p-4 sm:p-5 mb-6 relative overflow-hidden">
       {/* Background Subtle Coordinate Grid */}
-      <div className="absolute inset-0 tech-grid opacity-30 pointer-events-none"></div>
+      <div className="absolute inset-0 tech-grid opacity-20 pointer-events-none" />
 
       {/* Header Row */}
-      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pb-3 border-b border-space-800">
+      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pb-3 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <div className="px-2.5 py-1 rounded bg-cyan-950/80 border border-cyan-500/50 text-cyan-300 font-mono text-xs font-bold flex items-center gap-1.5 shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+          <div className="px-2.5 py-1 rounded-lg bg-black/60 border border-cyan-500/50 text-cyan-300 font-mono text-xs font-bold flex items-center gap-1.5 shadow-[0_0_12px_rgba(0,242,254,0.2)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
             <span>{mission.mission_id || "AMDSF-ACTIVE"}</span>
           </div>
           <div>
             <h2 className="text-sm font-bold text-white font-mono tracking-wide flex items-center gap-2">
               <span>{mission.mission_name}</span>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-space-800 text-slate-300 uppercase font-mono border border-space-700">
+              <span className="text-[10px] px-2 py-0.5 rounded bg-white/10 text-cyan-300 uppercase font-mono border border-white/10">
                 {mission.objective?.type || "EARTH_OBSERVATION"}
               </span>
             </h2>
@@ -33,10 +33,10 @@ export default function MissionContextBar({ mission, activePage }) {
         </div>
 
         <div className="flex items-center gap-2 text-xs font-mono">
-          <span className="text-[10px] text-slate-400 font-mono mr-1 hidden sm:inline">[CONTEXT LOCKED]</span>
+          <span className="text-[10px] text-slate-400 font-mono mr-1 hidden sm:inline">[MISSION ACTIVE]</span>
           <Link
             to="/planning"
-            className="px-3 py-1 rounded bg-space-850 hover:bg-space-800 text-cyan-300 hover:text-white border border-space-700 flex items-center gap-1.5 transition text-[11px]"
+            className="px-3 py-1.5 rounded-lg bg-black/40 hover:bg-black/60 text-cyan-300 hover:text-white border border-white/10 hover:border-cyan-500/50 flex items-center gap-1.5 transition text-[11px]"
           >
             <span>Reconfigure Mission</span>
             <ArrowRight className="w-3 h-3" />
@@ -47,7 +47,7 @@ export default function MissionContextBar({ mission, activePage }) {
       {/* Telemetry Metrics Grid */}
       <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 pt-3 text-xs font-mono">
         <div className="flex items-start gap-2.5">
-          <div className="p-1.5 rounded bg-space-850 border border-space-700 text-cyan-400 mt-0.5">
+          <div className="p-1.5 rounded-lg bg-black/50 border border-white/10 text-cyan-400 mt-0.5">
             <MapPin className="w-3.5 h-3.5" />
           </div>
           <div>
@@ -60,7 +60,7 @@ export default function MissionContextBar({ mission, activePage }) {
         </div>
 
         <div className="flex items-start gap-2.5">
-          <div className="p-1.5 rounded bg-space-850 border border-space-700 text-cyan-400 mt-0.5">
+          <div className="p-1.5 rounded-lg bg-black/50 border border-white/10 text-cyan-400 mt-0.5">
             <Compass className="w-3.5 h-3.5" />
           </div>
           <div>
@@ -71,7 +71,7 @@ export default function MissionContextBar({ mission, activePage }) {
         </div>
 
         <div className="flex items-start gap-2.5">
-          <div className="p-1.5 rounded bg-space-850 border border-space-700 text-cyan-400 mt-0.5">
+          <div className="p-1.5 rounded-lg bg-black/50 border border-white/10 text-cyan-400 mt-0.5">
             <Rocket className="w-3.5 h-3.5" />
           </div>
           <div>
@@ -84,7 +84,7 @@ export default function MissionContextBar({ mission, activePage }) {
         </div>
 
         <div className="flex items-start gap-2.5">
-          <div className="p-1.5 rounded bg-space-850 border border-space-700 text-cyan-400 mt-0.5">
+          <div className="p-1.5 rounded-lg bg-black/50 border border-white/10 text-cyan-400 mt-0.5">
             <Calendar className="w-3.5 h-3.5" />
           </div>
           <div>

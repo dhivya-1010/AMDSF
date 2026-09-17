@@ -44,18 +44,18 @@ export default function Navbar() {
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${
       scrolled
-        ? 'bg-space-950/95 backdrop-blur-md border-b border-space-700 shadow-2xl'
-        : 'bg-space-950/80 backdrop-blur-sm border-b border-space-800/80'
+        ? 'bg-black/70 backdrop-blur-2xl border-b border-white/10 shadow-2xl'
+        : 'bg-black/35 backdrop-blur-md border-b border-white/5'
     }`}>
       {/* Top Telemetry Ticker Bar */}
-      <div className="border-b border-space-800/60 bg-space-900/60 px-4 sm:px-8 py-1 flex items-center justify-between text-[10px] font-mono text-slate-400">
+      <div className="border-b border-white/5 bg-black/40 px-4 sm:px-8 py-1 flex items-center justify-between text-[10px] font-mono text-slate-400">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5 text-cyan-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
             <span className="font-semibold tracking-wider">AMDSF AUTONOMOUS NETWORK</span>
           </div>
-          <span className="hidden md:inline text-slate-600">|</span>
-          <span className="hidden md:inline text-slate-400">FRAMEWORK: DECISION SUPPORT v1.0</span>
+          <span className="hidden md:inline text-white/20">|</span>
+          <span className="hidden md:inline text-slate-400">DECISION SUPPORT v1.0 • MULTI-DOMAIN AEROSPACE</span>
         </div>
 
         <div className="flex items-center gap-4">
@@ -63,9 +63,9 @@ export default function Navbar() {
             <Clock className="w-3 h-3 text-cyan-400" />
             <span>{utcTime || '00:00:00 UTC'}</span>
           </div>
-          <span className="text-slate-600">|</span>
+          <span className="text-white/20">|</span>
           <div className="flex items-center gap-1.5">
-            <span className={`w-1.5 h-1.5 rounded-full ${backendConnected ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+            <span className={`w-1.5 h-1.5 rounded-full ${backendConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
             <span className={backendConnected ? 'text-emerald-400 font-semibold' : 'text-amber-400'}>
               {backendConnected ? 'LIVE BACKEND' : 'SIMULATION MODE'}
             </span>
@@ -79,7 +79,7 @@ export default function Navbar() {
           
           {/* Brand Logo & Military-grade Badge */}
           <NavLink to="/" className="flex items-center gap-3 shrink-0 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-space-850 to-space-900 border border-cyan-500/40 flex items-center justify-center shadow-lg group-hover:border-cyan-400 transition">
+            <div className="w-8 h-8 rounded-lg bg-black/50 border border-cyan-500/40 flex items-center justify-center shadow-lg group-hover:border-cyan-400 group-hover:shadow-[0_0_15px_rgba(0,242,254,0.3)] transition">
               <Rocket className="w-4 h-4 text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
             </div>
             <div>
@@ -87,7 +87,7 @@ export default function Navbar() {
                 <span className="font-mono text-base font-bold tracking-widest text-white group-hover:text-cyan-300 transition">
                   AMDSF
                 </span>
-                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-space-800 text-cyan-400 border border-space-700">
+                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/50 text-cyan-400 border border-cyan-500/30">
                   OPS-01
                 </span>
               </div>
@@ -106,10 +106,10 @@ export default function Navbar() {
                   key={item.path}
                   to={item.path}
                   className={({ isActive }) =>
-                    `px-3 py-1.5 rounded-md text-xs font-mono transition flex items-center gap-1.5 ${
+                    `px-3 py-1.5 rounded-lg text-xs font-mono transition flex items-center gap-1.5 ${
                       isActive
-                        ? 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/40 shadow-sm font-semibold'
-                        : 'text-slate-300 hover:text-white hover:bg-space-850/80 border border-transparent'
+                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 shadow-[0_0_15px_rgba(0,242,254,0.2)] font-semibold'
+                        : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent'
                     }`
                   }
                 >
@@ -125,16 +125,16 @@ export default function Navbar() {
             {activeMission ? (
               <Link
                 to="/planning"
-                className="flex items-center gap-2 px-3 py-1 rounded-lg bg-space-900 border border-cyan-500/50 hover:border-cyan-400 text-cyan-300 transition shadow-inner"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/50 border border-cyan-500/50 hover:border-cyan-400 text-cyan-300 transition shadow-lg backdrop-blur-md"
               >
-                <div className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></div>
+                <div className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
                 <span className="text-[10px] text-slate-400 hidden sm:inline uppercase">MISSION:</span>
                 <span className="font-bold text-white tracking-wide truncate max-w-[130px]">{activeMission.mission_id}</span>
               </Link>
             ) : (
               <Link
                 to="/planning"
-                className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-space-900 border border-space-700 hover:border-cyan-500/50 text-slate-400 hover:text-cyan-300 transition text-[11px]"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/40 border border-white/10 hover:border-cyan-500/50 text-slate-400 hover:text-cyan-300 transition text-[11px] backdrop-blur-md"
               >
                 <Layers className="w-3.5 h-3.5 text-cyan-400" />
                 <span>NO MISSION ACTIVE</span>
@@ -145,7 +145,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Sub-Navigation */}
-        <div className="lg:hidden flex items-center overflow-x-auto py-2 gap-2 border-t border-space-800/80 scrollbar-none">
+        <div className="lg:hidden flex items-center overflow-x-auto py-2 gap-2 border-t border-white/10 scrollbar-none">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -156,7 +156,7 @@ export default function Navbar() {
                   `px-2.5 py-1 rounded text-[11px] font-mono whitespace-nowrap transition flex items-center gap-1 shrink-0 ${
                     isActive
                       ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold'
-                      : 'text-slate-400 hover:text-slate-200 bg-space-900 border border-space-800'
+                      : 'text-slate-400 hover:text-slate-200 bg-black/40 border border-white/10'
                   }`
                 }
               >

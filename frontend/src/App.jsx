@@ -14,12 +14,12 @@ export default function App() {
   return (
     <MissionProvider>
       <Router>
-        <div className="min-h-screen bg-space-950 text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30">
-          {/* Sticky Professional Navbar with Active Mission Badge & System Health */}
+        <div className="min-h-screen text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 relative">
+          {/* Sticky Floating Glass Navbar */}
           <Navbar />
 
-          {/* Main Content Area */}
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+          {/* Main Full-Bleed Content Area */}
+          <main className="flex-1 w-full relative">
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/planning" element={<MissionPlanning />} />
@@ -32,9 +32,16 @@ export default function App() {
             </Routes>
           </main>
 
-          {/* Footer */}
-          <footer className="border-t border-space-800/80 bg-space-950 py-4 px-4 text-center text-xs text-slate-500 font-mono">
-            AMDSF — Agentic Multi-Domain Space Mission Decision Support Framework • Autonomous Multi-Agent Decision Engine
+          {/* Floating Aerospace Footer */}
+          <footer className="border-t border-white/10 bg-black/40 backdrop-blur-md py-4 px-4 text-center text-xs text-slate-400 font-mono relative z-10">
+            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+              <span className="text-cyan-400/90 font-semibold tracking-wider">
+                AMDSF — AGENTIC MULTI-DOMAIN SPACE MISSION DECISION SUPPORT FRAMEWORK
+              </span>
+              <span className="text-[11px] text-slate-500">
+                Autonomous Multi-Agent Aerospace Intelligence Engine
+              </span>
+            </div>
           </footer>
         </div>
       </Router>

@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useMission } from '../context/MissionContext';
 import StarfieldCanvas from '../components/StarfieldCanvas';
-import rocketPadImg from '../assets/images/rocket_launch_pad.jpg';
+import BackgroundScene from '../components/BackgroundScene';
 
 // Curated geographic regions & spaceports dataset
 const CURATED_TARGETS = {
@@ -353,37 +353,27 @@ export default function MissionPlanning() {
   ];
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto pb-12">
+    <div className="relative min-h-screen">
+      <BackgroundScene scene="rocket" overlayGradient="standard" />
       <StarfieldCanvas count={50} opacity={0.35} />
 
-      {/* Hero Header with Rocket Launch Gantry Atmosphere */}
-      <div className="relative rounded-2xl overflow-hidden border border-space-700 p-6 sm:p-8 shadow-2xl">
-        <div
-          className="absolute inset-0 space-bg-hero"
-          style={{
-            backgroundImage: `url(${rocketPadImg})`,
-            backgroundPosition: 'center 40%',
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-space-950 via-space-950/85 to-space-950/60" />
-        <div className="absolute inset-0 bg-gradient-to-t from-space-950 via-transparent to-space-950/40" />
-
-        <div className="relative z-10 space-y-2">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6 pb-20 relative z-10">
+        {/* Floating Aerospace Header */}
+        <div className="hud-glass hud-corner-ticks p-6 sm:p-8 space-y-2">
           <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs">
             <Sliders className="w-4 h-4" />
-            <span>MISSION PLANNING CONSOLE</span>
+            <span className="font-semibold tracking-wider uppercase">MISSION SPECIFICATION & FLIGHT PROFILE WIZARD</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold font-mono text-white tracking-wide">
+          <h1 className="text-2xl sm:text-4xl font-bold font-mono text-white tracking-wide">
             Flight Parameters Specification
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 font-mono max-w-2xl leading-relaxed">
             Define target geography, spaceport staging, orbital mechanics, and budget thresholds. Data propagates across all 4 domain intelligence agents.
           </p>
         </div>
-      </div>
 
-      {/* Stepper Progress Bar */}
-      <div className="bg-space-900/90 border border-space-700 rounded-xl p-4 shadow-xl backdrop-blur-md hud-corner-ticks">
+        {/* Stepper Progress Bar */}
+        <div className="hud-glass hud-corner-ticks p-4">
         <div className="flex items-center justify-between">
           {stepsList.map((s, idx) => (
             <React.Fragment key={s.num}>
@@ -986,7 +976,7 @@ export default function MissionPlanning() {
           </button>
         )}
       </div>
-
     </div>
+  </div>
   );
 }
