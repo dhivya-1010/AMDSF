@@ -4,7 +4,8 @@ import {
   ShieldAlert, SunMedium, Wrench, Satellite,
   Compass, Award, ArrowRight, Layers, Cpu, CheckCircle2, ChevronRight,
   Sparkles, Radio, Activity, HelpCircle, ShieldCheck, Terminal,
-  Globe2, Rocket, ArrowDownRight, Clock, Zap, Target, Gauge, Eye
+  Globe2, Rocket, ArrowDownRight, Clock, Zap, Target, Gauge, Eye,
+  Sliders
 } from 'lucide-react';
 import { useMission } from '../context/MissionContext';
 import RiskCard from '../components/RiskCard';
