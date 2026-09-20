@@ -82,9 +82,21 @@ export default function CinematicScrollStory({ activeMission, analysisResults })
           );
         })}
 
-        {/* Global Cinematic Space Lighting & Contrast Vignette */}
-        <div className="absolute inset-0 bg-gradient-to-b from-space-950/70 via-transparent to-space-950/80" />
-        <div className="absolute inset-0 bg-radial-[circle_at_center,transparent_30%,rgba(3,7,18,0.75)_100%]" />
+        {/* Global Atmospheric Space Contrast & Directional Overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(90deg, rgba(0, 0, 0, 0.58) 0%, rgba(0, 0, 0, 0.52) 40%, rgba(0, 0, 0, 0.45) 75%, rgba(0, 0, 0, 0.42) 100%), linear-gradient(180deg, rgba(3, 7, 18, 0.65) 0%, transparent 20%, transparent 80%, rgba(3, 7, 18, 0.75) 100%)',
+          }}
+        />
+        {/* Subtle Space Vignette for Deep Space Contrast */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle at 60% 50%, transparent 45%, rgba(0, 0, 0, 0.50) 100%)',
+          }}
+        />
       </div>
 
       {/* Floating Starfield Canvas */}

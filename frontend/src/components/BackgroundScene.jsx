@@ -51,14 +51,14 @@ export default function BackgroundScene({
   const getOverlayGradient = () => {
     switch (overlayGradient) {
       case 'minimal':
-        return 'radial-gradient(ellipse at center, rgba(3, 7, 18, 0.25) 0%, rgba(3, 7, 18, 0.65) 100%)';
+        return 'linear-gradient(90deg, rgba(0, 0, 0, 0.48) 0%, rgba(0, 0, 0, 0.42) 50%, rgba(0, 0, 0, 0.38) 100%), linear-gradient(180deg, rgba(3, 7, 18, 0.55) 0%, transparent 25%, transparent 75%, rgba(3, 7, 18, 0.65) 100%)';
       case 'strong':
-        return 'linear-gradient(180deg, rgba(3, 7, 18, 0.8) 0%, rgba(3, 7, 18, 0.45) 40%, rgba(3, 7, 18, 0.85) 100%)';
+        return 'linear-gradient(90deg, rgba(0, 0, 0, 0.68) 0%, rgba(0, 0, 0, 0.62) 40%, rgba(0, 0, 0, 0.52) 100%), linear-gradient(180deg, rgba(3, 7, 18, 0.80) 0%, transparent 20%, transparent 80%, rgba(3, 7, 18, 0.85) 100%)';
       case 'none':
         return 'none';
       case 'standard':
       default:
-        return 'linear-gradient(180deg, rgba(3, 7, 18, 0.6) 0%, rgba(3, 7, 18, 0.3) 30%, rgba(3, 7, 18, 0.35) 70%, rgba(3, 7, 18, 0.8) 100%)';
+        return 'linear-gradient(90deg, rgba(0, 0, 0, 0.58) 0%, rgba(0, 0, 0, 0.52) 40%, rgba(0, 0, 0, 0.45) 75%, rgba(0, 0, 0, 0.42) 100%), linear-gradient(180deg, rgba(3, 7, 18, 0.65) 0%, transparent 20%, transparent 80%, rgba(3, 7, 18, 0.75) 100%)';
     }
   };
 
@@ -97,8 +97,13 @@ export default function BackgroundScene({
         }}
       />
 
-      {/* Subtle Space Particle Star Dust Vignette */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_40%,rgba(3,7,18,0.7)_100%)]" />
+      {/* Subtle Space Vignette for Deep Space Contrast */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle at 60% 50%, transparent 45%, rgba(0, 0, 0, 0.50) 100%)',
+        }}
+      />
 
       {/* Optional Children content */}
       {children && (

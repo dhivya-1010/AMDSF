@@ -44,8 +44,8 @@ export default function Navbar() {
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${
       scrolled
-        ? 'bg-black/70 backdrop-blur-2xl border-b border-white/10 shadow-2xl'
-        : 'bg-black/35 backdrop-blur-md border-b border-white/5'
+        ? 'bg-black/80 backdrop-blur-2xl border-b border-white/10 shadow-2xl'
+        : 'bg-black/55 backdrop-blur-xl border-b border-white/10'
     }`}>
       {/* Top Telemetry Ticker Bar */}
       <div className="border-b border-white/5 bg-black/40 px-4 sm:px-8 py-1 flex items-center justify-between text-[10px] font-mono text-slate-400">
