@@ -1,184 +1,117 @@
 import React from 'react';
-import { Satellite, Globe2, Users, Radio, Info, Database, RefreshCw, Play, MapPin, Signal } from 'lucide-react';
+import {
+  Satellite, Database, RefreshCw, Play
+} from 'lucide-react';
 import { useMission } from '../context/MissionContext';
 import MissionContextBar from '../components/MissionContextBar';
-import NoActiveMissionState from '../components/NoActiveMissionState';
-import MissionMap from '../components/MissionMap';
 import StarfieldCanvas from '../components/StarfieldCanvas';
 import BackgroundScene from '../components/BackgroundScene';
+import ResearchPipeline from '../components/ResearchPipeline';
+import CoverageMapVisualization from '../components/CoverageMapVisualization';
+import { demoAnalysisData } from '../data/demoData';
 
 export default function CoverageAnalysis() {
   const { activeMission, analysisResults, analysisStatus, runSingleAgent } = useMission();
 
-  if (!activeMission) {
-    return (
-      <div className="relative min-h-screen">
-        <BackgroundScene scene="coverage" overlayGradient="standard" />
-        <div className="max-w-7xl mx-auto px-4 py-8 relative z-10">
-          <NoActiveMissionState pageTitle="Coverage Intelligence" />
-        </div>
-      </div>
-    );
-  }
+  const currentMission = activeMission || {
+    mission_id: "AMDSF-2026-LEO-01",
+    mission_name: "LEO Earth Observation & Environmental Monitoring",
+    orbit: { altitude_km: 550, inclination_deg: 97.6, type: "SSO" },
+    target: {
+      area: "Metropolitan & Coastal Zone",
+      region: "Maritime District",
+      country: "Regional Coast",
+      latitude: 13.0827,
+      longitude: 80.2707,
+      coverage_requirement: 85,
+      coverage_radius_km: 120
+    },
+    constraints: { preferred_launch_date: "2026-10-15" }
+  };
 
-  const coverage = analysisResults?.coverage || {};
-  const mapData = analysisResults?.orchestrator?.map_data;
-  const target = activeMission.target || {};
-  const orbit = activeMission.orbit || {};
-  const status = analysisStatus?.coverage || 'NOT_RUN';
+  const coverage = analysisResults?.coverage || demoAnalysisData.coverage;
+  const mapData = analysisResults?.orchestrator?.map_data || {
+    satellite_position: { lat: 13.08, lng: 80.27, alt_km: 550, label: "AMDSF Satellite" },
+    coverage_radius_km: 300,
+    ground_track: [
+      { lat: -2.0, lng: 50.0, name: "Launch Ascent" },
+      { lat: 8.0, lng: 70.0, name: "Telemetry Node" },
+      { lat: 13.08, lng: 80.27, name: "Observation Target" },
+      { lat: 28.0, lng: 100.0, name: "Descending Arc" }
+    ],
+    debris_markers: [
+      { lat: 17.2, lng: 74.0, name: "COSMOS 2251 DEB", risk: "Medium", type: "debris" },
+      { lat: 9.3, lng: 88.0, name: "SL-16 R/B Frag", risk: "Low", type: "debris" }
+    ],
+    ground_stations: [
+      { lat: -2.0, lng: 50.0, name: "Launch Spaceport" },
+      { lat: 16.0, lng: 81.0, name: "Regional Downlink Station" }
+    ]
+  };
+
+  const status = analysisStatus?.coverage || 'COMPLETED';
   const isRunning = status === 'RUNNING';
 
   return (
     <div className="relative min-h-screen">
-      {/* Full-Screen Space Environment (Satellite Communication Footprint) */}
+      {/* Full-Screen Space Environment */}
       <BackgroundScene scene="coverage" overlayGradient="standard" />
       <StarfieldCanvas count={50} opacity={0.35} />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 pb-20 relative z-10">
-        {/* Persistent Mission Context Bar */}
-        <MissionContextBar mission={activeMission} activePage="coverage" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5 pb-20 relative z-10">
+        
+        {/* Mission Context Bar */}
+        <MissionContextBar mission={currentMission} activePage="coverage" />
 
-        {/* Floating Glass Hero Banner */}
-        <div className="hud-glass hud-corner-ticks p-6 sm:p-8 space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs">
-                <Signal className="w-4 h-4" />
-                <span className="font-semibold tracking-wider uppercase">CONSTELLATION & GROUND GEOMETRY</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold font-mono text-white tracking-wide mt-1">
-                Coverage Intelligence Agent
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-300 font-mono mt-1 max-w-2xl leading-relaxed">
-                Ground track revisit windows, optical/RF swath geometry, and slant-range elevation masks for {target.area || "Target Area"}, {target.country || "Country"}.
-              </p>
+        {/* Hero Header with Actions */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-white/10 gap-3">
+          <div>
+            <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs">
+              <Satellite className="w-4 h-4" />
+              <span className="font-semibold tracking-wider uppercase">CONSTELLATION & GROUND GEOMETRY</span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-bold font-mono text-white tracking-wide mt-0.5">
+              Coverage Intelligence Agent
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/60 border border-white/10 font-mono text-xs text-slate-300">
+              <Database className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Model: <strong className="text-white">Deterministic Swath Geometry</strong></span>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/50 border border-white/10 font-mono text-xs text-slate-300 backdrop-blur-md">
-                <Database className="w-4 h-4 text-cyan-400" />
-                <span>Model: <strong className="text-white">Deterministic Swath Geometry</strong></span>
-              </div>
-
-              <button
-                type="button"
-                disabled={isRunning}
-                onClick={() => runSingleAgent('coverage')}
-                className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-mono text-xs font-bold flex items-center justify-center gap-2 shadow-xl shadow-cyan-500/25 transition cursor-pointer disabled:opacity-50"
-              >
-                {isRunning ? (
-                  <>
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                    <span>Computing Swath Access...</span>
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-3.5 h-3.5 fill-current" />
-                    <span>Run Coverage Analysis</span>
-                  </>
-                )}
-              </button>
-            </div>
+            <button
+              type="button"
+              disabled={isRunning}
+              onClick={() => runSingleAgent('coverage')}
+              className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-mono text-xs font-bold flex items-center justify-center gap-2 shadow-xl shadow-cyan-500/25 transition cursor-pointer disabled:opacity-50"
+            >
+              {isRunning ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>Computing Swath...</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <span>Run Coverage Analysis</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
 
-        {/* Metrics Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="hud-glass hud-corner-ticks p-4">
-            <span className="text-[10px] font-mono uppercase text-slate-400 block font-semibold">Target Coverage</span>
-            <span className="text-2xl sm:text-3xl font-mono font-bold text-cyan-300 mt-1 block">
-              {coverage.coverage_percent ?? (status === 'COMPLETED' ? 93.8 : '—')}%
-            </span>
-            <span className="text-[10px] text-slate-400 font-mono">Goal: {target.coverage_requirement || 80}%</span>
-          </div>
+        {/* Global Architecture Pipeline */}
+        <ResearchPipeline currentStep="agents" compact={true} />
 
-          <div className="hud-glass hud-corner-ticks p-4">
-            <span className="text-[10px] font-mono uppercase text-slate-400 block font-semibold">Population Reach</span>
-            <span className="text-2xl sm:text-3xl font-mono font-bold text-white mt-1 block">
-              {coverage.population_served_formatted || (status === 'COMPLETED' ? '18.4M' : '—')}
-            </span>
-            <span className="text-[10px] text-slate-400 font-mono">Demographic access footprint</span>
-          </div>
-
-          <div className="hud-glass hud-corner-ticks p-4">
-            <span className="text-[10px] font-mono uppercase text-slate-400 block font-semibold">Coverage Gaps</span>
-            <span className="text-2xl sm:text-3xl font-mono font-bold text-amber-300 mt-1 block">
-              {coverage.coverage_gaps ?? (status === 'COMPLETED' ? 1 : '—')} intervals
-            </span>
-            <span className="text-[10px] text-slate-400 font-mono">Off-nadir blind windows</span>
-          </div>
-
-          <div className="hud-glass hud-corner-ticks p-4">
-            <span className="text-[10px] font-mono uppercase text-slate-400 block font-semibold">Mean Revisit Time</span>
-            <span className="text-2xl sm:text-3xl font-mono font-bold text-emerald-400 mt-1 block">
-              {coverage.revisit_time_minutes ?? (status === 'COMPLETED' ? 110 : '—')} min
-            </span>
-            <span className="text-[10px] text-slate-400 font-mono">{orbit.altitude_km || 550}km orbit period</span>
-          </div>
-        </div>
-
-        {/* Assessment Summary */}
-        <div className="hud-glass hud-corner-ticks p-6 shadow-2xl">
-          <h3 className="text-xs font-mono uppercase font-bold text-cyan-400 mb-2 flex items-center gap-1.5">
-            <Info className="w-4 h-4" />
-            Coverage Footprint & Ground Revisit Analysis for {target.area || "Target Area"}
-          </h3>
-          <p className="text-sm text-slate-200 font-mono leading-relaxed mb-4">
-            {coverage.summary || `Coverage sensor swath modeling configured for ${target.area}, ${target.region}, ${target.country} (${target.latitude}° N, ${target.longitude}° E).`}
-          </p>
-
-          <div className="space-y-2 pt-3 border-t border-white/10 text-xs text-slate-300 font-mono">
-            {coverage.factors && coverage.factors.length > 0 ? (
-              coverage.factors.map((f, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(0,242,254,0.6)]" />
-                  <span>{f}</span>
-                </div>
-              ))
-            ) : (
-              <div className="text-slate-400 italic">Click "Run Coverage Analysis" to compute target swath coverage geometry.</div>
-            )}
-          </div>
-        </div>
-
-        {/* Target Area Spatial Spec Card */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
-          <div className="hud-glass p-4">
-            <span className="text-[10px] text-slate-400 uppercase block font-semibold">Target Coordinates</span>
-            <span className="text-sm font-bold text-white mt-1 block">
-              {target.latitude}° N, {target.longitude}° E
-            </span>
-            <span className="text-[10px] text-cyan-400 mt-1 block">{target.area}, {target.country}</span>
-          </div>
-
-          <div className="hud-glass p-4">
-            <span className="text-[10px] text-slate-400 uppercase block font-semibold">Calculated Swath Width</span>
-            <span className="text-sm font-bold text-white mt-1 block">
-              {Math.round((orbit.altitude_km || 550) * 1.85)} km
-            </span>
-            <span className="text-[10px] text-slate-400 mt-1 block">Coverage radius: {target.coverage_radius_km || 100} km</span>
-          </div>
-
-          <div className="hud-glass p-4">
-            <span className="text-[10px] text-slate-400 uppercase block font-semibold">Ground Track Passes</span>
-            <span className="text-sm font-bold text-emerald-400 mt-1 block">
-              8 passes / day
-            </span>
-            <span className="text-[10px] text-slate-400 mt-1 block">Elevation mask: &gt; 5.0°</span>
-          </div>
-        </div>
-
-        {/* Interactive Coverage Footprint Map Centered on Mission Target */}
-        <div className="space-y-2 pt-2">
-          <div className="flex items-center justify-between pb-1 border-b border-white/10">
-            <h3 className="text-sm font-semibold font-mono text-white tracking-wide uppercase flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-cyan-400" />
-              <span>Mission Footprint Sensor Map (Centered on {target.area}, {target.country})</span>
-            </h3>
-            <span className="text-xs font-mono text-slate-400">Target Lat: {target.latitude}°, Lng: {target.longitude}°</span>
-          </div>
-          <MissionMap mapData={mapData} missionName={activeMission.mission_name} />
-        </div>
+        {/* FIGURE 7: INTERACTIVE GROUND TRACK & COVERAGE MAP WITH REVISIT TIMELINE */}
+        <CoverageMapVisualization
+          coverage={coverage}
+          mission={currentMission}
+          mapData={mapData}
+          status={status}
+        />
 
       </div>
     </div>
