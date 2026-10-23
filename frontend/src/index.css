@@ -207,3 +207,22 @@ body {
 .animate-scanline {
   animation: scanline 8s linear infinite;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Page-Specific Aerospace Visual Identities */
+.bg-aerospace-surveillance {
+  background-color: #070b12;
+}
+
+.bg-aerospace-laboratory {
+  background-color: #0a0f16;
+}
+

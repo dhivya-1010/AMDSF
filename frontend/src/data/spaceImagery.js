@@ -12,8 +12,17 @@ import propulsionBgImg from '../assets/images/propulsion_staging.jpg';
 import coverageFootprintImg from '../assets/images/coverage_footprint.jpg';
 import satelliteOrbitImg from '../assets/images/satellite_orbit.jpg';
 import earthHorizonImg from '../assets/images/earth_horizon.jpg';
+import earthObservationImg from '../assets/images/earth_observation_lab.jpg';
 
 export const SPACE_SCENES = {
+  observationLab: {
+    id: 'observationLab',
+    name: 'Earth Observation Laboratory',
+    image: earthObservationImg,
+    alt: 'High-altitude satellite Earth observation nadir view with visible coastline, terrain, and clouds',
+    attribution: 'Sentinel-2 / Landsat Earth Observation Nadir Platform',
+    description: 'High-altitude geographic observation scene with terrain and coastline for mission design.',
+  },
   earth: {
     id: 'earth',
     name: 'Earth from Orbit',

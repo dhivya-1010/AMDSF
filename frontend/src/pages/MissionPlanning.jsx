@@ -6,8 +6,7 @@ import {
   AlertCircle, ChevronRight, MapPin, Globe2, Gauge
 } from 'lucide-react';
 import { useMission } from '../context/MissionContext';
-import BackgroundScene from '../components/BackgroundScene';
-import StarfieldCanvas from '../components/StarfieldCanvas';
+import MissionPlanningBackground from '../components/MissionPlanningBackground';
 import OrbitalEllipsePreview from '../components/OrbitalEllipsePreview';
 import ResearchPipeline from '../components/ResearchPipeline';
 
@@ -203,9 +202,8 @@ export default function MissionPlanning() {
 
   return (
     <div className="relative min-h-screen">
-      {/* Full-Screen High-Resolution Space Background */}
-      <BackgroundScene scene="orbit" overlayGradient="standard" />
-      <StarfieldCanvas count={50} opacity={0.35} />
+      {/* Earth Observation & Mission Design Laboratory Background */}
+      <MissionPlanningBackground />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5 pb-20 relative z-10">
         
@@ -213,7 +211,7 @@ export default function MissionPlanning() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-white/10 gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
               <h1 className="text-xl sm:text-2xl font-bold font-mono text-white tracking-wide">
                 Mission Construction & Orbit Configuration
               </h1>
@@ -226,7 +224,7 @@ export default function MissionPlanning() {
           <button
             onClick={handleLaunchAnalysis}
             disabled={loading}
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-mono text-xs font-bold flex items-center justify-center gap-2 shadow-xl shadow-cyan-500/25 transition cursor-pointer disabled:opacity-50"
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-700 hover:from-sky-500 hover:to-indigo-600 text-white font-mono text-xs font-bold flex items-center justify-center gap-2 shadow-xl shadow-blue-900/30 transition cursor-pointer disabled:opacity-50"
           >
             {loading ? (
               <>
@@ -243,19 +241,19 @@ export default function MissionPlanning() {
         </div>
 
         {/* Global Architecture Pipeline (Figure 3) */}
-        <ResearchPipeline currentStep="profile" compact={true} />
+        <ResearchPipeline currentStep="profile" compact={true} theme="laboratory" />
 
         {/* 2-COLUMN MAIN CONTENT: LEFT (CONSTRUCTION WORKFLOW), RIGHT (ORBITAL PREVIEW) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
           
           {/* LEFT COLUMN: VISUAL MISSION CONSTRUCTION PIPELINE (~50% width) */}
           <div className="lg:col-span-6 space-y-4">
-            <div className="bg-black/75 border border-cyan-500/40 rounded-2xl p-4 sm:p-5 shadow-2xl backdrop-blur-2xl hud-corner-ticks">
+            <div className="bg-[#0c121e]/95 border border-slate-700/60 rounded-2xl p-4 sm:p-5 shadow-2xl backdrop-blur-xl hud-corner-ticks">
               <div className="flex items-center justify-between pb-3 border-b border-white/10 text-xs font-mono mb-3">
                 <span className="font-bold text-white uppercase tracking-wider">
                   MISSION CONSTRUCTION PIPELINE
                 </span>
-                <span className="text-[10px] text-cyan-400">Click Stage to Adjust</span>
+                <span className="text-[10px] text-slate-300">Click Stage to Adjust</span>
               </div>
 
               {/* Vertical Pipeline Nodes */}
@@ -270,13 +268,13 @@ export default function MissionPlanning() {
                         onClick={() => setActiveStage(stg.id)}
                         className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between font-mono ${
                           isSelected
-                            ? 'bg-cyan-950/60 border-cyan-400 shadow-[0_0_15px_rgba(0,242,254,0.2)]'
-                            : 'bg-black/50 border-white/10 hover:border-cyan-500/30'
+                            ? 'bg-slate-800/95 border-slate-400/80 shadow-[0_4px_16px_rgba(0,0,0,0.5)]'
+                            : 'bg-[#090e17]/85 border-white/10 hover:border-slate-500/40'
                         }`}
                       >
                         <div className="flex items-center gap-3">
                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border ${
-                            isSelected ? 'bg-cyan-500 text-slate-950 border-cyan-400' : 'bg-black/60 text-cyan-300 border-white/10'
+                            isSelected ? 'bg-slate-200 text-slate-900 border-slate-300' : 'bg-black/60 text-slate-300 border-white/10'
                           }`}>
                             <Icon className="w-4 h-4" />
                           </div>
@@ -293,13 +291,13 @@ export default function MissionPlanning() {
                           <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-950/70 border border-emerald-500/40 text-emerald-300">
                             {stg.status}
                           </span>
-                          <ChevronRight className={`w-4 h-4 text-cyan-400 transition-transform ${isSelected ? 'rotate-90' : ''}`} />
+                          <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'rotate-90 text-slate-200' : 'text-slate-500'}`} />
                         </div>
                       </div>
 
                       {/* Expanded In-Place Tuner for Active Stage */}
                       {isSelected && (
-                        <div className="mt-2 p-3.5 rounded-xl bg-slate-950/90 border border-cyan-500/30 font-mono text-xs space-y-3 animate-fadeIn">
+                        <div className="mt-2 p-3.5 rounded-xl bg-[#090e18]/95 border border-slate-700/70 font-mono text-xs space-y-3 animate-fadeIn">
                           {activeStage === 'orbit' && (
                             <div className="space-y-3">
                               <div className="grid grid-cols-2 gap-3">
@@ -494,7 +492,7 @@ export default function MissionPlanning() {
                 <button
                   onClick={handleLaunchAnalysis}
                   disabled={loading}
-                  className="w-full py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-mono text-xs font-bold flex items-center justify-center gap-2 shadow-xl shadow-cyan-500/25 transition cursor-pointer"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-700 hover:from-sky-500 hover:to-indigo-600 text-white font-mono text-xs font-bold flex items-center justify-center gap-2 shadow-xl shadow-blue-900/30 transition cursor-pointer"
                 >
                   <Play className="w-3.5 h-3.5 fill-current" />
                   <span>Execute Multi-Agent Analysis Pipeline</span>

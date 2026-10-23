@@ -36,16 +36,16 @@ export default function OrbitalEllipsePreview({ form = {} }) {
   const tiltDeg = ((incDeg - 90) * 0.35);
 
   return (
-    <div className="w-full h-full min-h-[460px] bg-black/75 border border-cyan-500/40 rounded-2xl p-5 shadow-2xl backdrop-blur-2xl flex flex-col justify-between hud-corner-ticks relative overflow-hidden">
+    <div className="w-full h-full min-h-[460px] bg-[#0c121e]/95 border border-slate-700/60 rounded-2xl p-5 shadow-2xl backdrop-blur-xl flex flex-col justify-between hud-corner-ticks relative overflow-hidden">
       {/* Figure Header */}
       <div className="flex items-center justify-between pb-3 border-b border-white/10 text-xs font-mono">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#00f2fe]" />
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
           <span className="font-bold text-white tracking-wider uppercase">
             FIGURE 2: ORBIT CONFIGURATION & KEPLERIAN GEOMETRY
           </span>
         </div>
-        <span className="px-2 py-0.5 rounded bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 text-[10px]">
+        <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-300 text-[10px]">
           INTERACTIVE SIMULATION
         </span>
       </div>

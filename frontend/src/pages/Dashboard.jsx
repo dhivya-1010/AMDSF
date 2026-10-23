@@ -5,8 +5,7 @@ import {
   RefreshCw, Globe2, Sparkles, ChevronRight
 } from 'lucide-react';
 import { useMission } from '../context/MissionContext';
-import BackgroundScene from '../components/BackgroundScene';
-import StarfieldCanvas from '../components/StarfieldCanvas';
+import DashboardBackground from '../components/DashboardBackground';
 import ResearchPipeline from '../components/ResearchPipeline';
 import CentralMissionVisualization from '../components/CentralMissionVisualization';
 import AgentSystemTopology from '../components/AgentSystemTopology';
@@ -69,9 +68,8 @@ export default function Dashboard() {
 
   return (
     <div className="relative min-h-screen">
-      {/* Full-Screen Space Environment */}
-      <BackgroundScene scene="orbit" overlayGradient="standard" />
-      <StarfieldCanvas count={60} opacity={0.35} />
+      {/* Space Situational Awareness Control Room Background */}
+      <DashboardBackground />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5 pb-20 relative z-10">
         
