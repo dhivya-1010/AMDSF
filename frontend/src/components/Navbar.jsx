@@ -134,38 +134,41 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Main Navigation Bar - 3-Section Flexbox Architecture */}
-      <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14 gap-2 sm:gap-3 lg:gap-4">
+      {/* Main Navigation Bar - 3-Column CSS Grid Architecture */}
+      <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 box-border">
+        <div className="navbar-main h-14">
           
-          {/* LEFT SECTION: AMDSF Brand Logo & Badge */}
-          <NavLink to="/" className="flex items-center gap-2.5 sm:gap-3 shrink-0 group">
-            <div className="w-9 h-9 rounded-lg bg-black/60 border border-cyan-500/50 flex items-center justify-center shadow-lg group-hover:border-cyan-400 group-hover:shadow-[0_0_15px_rgba(0,242,254,0.4)] transition shrink-0">
-              <Rocket className="w-4.5 h-4.5 text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 sm:gap-2 leading-none">
-                <span className="font-mono text-base sm:text-lg font-extrabold tracking-widest text-white group-hover:text-cyan-300 transition whitespace-nowrap">
-                  AMDSF
-                </span>
-                <span className="text-[10px] font-bold font-mono px-1.5 sm:px-2 py-0.5 rounded bg-cyan-950/70 text-cyan-300 border border-cyan-400/40 shrink-0">
-                  OPS-01
-                </span>
+          {/* COLUMN 1: LEFT SECTION - AMDSF Brand Logo & Badge */}
+          <div className="navbar-brand">
+            <NavLink to="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
+              <div className="w-9 h-9 rounded-lg bg-black/60 border border-cyan-500/50 flex items-center justify-center shadow-lg group-hover:border-cyan-400 group-hover:shadow-[0_0_15px_rgba(0,242,254,0.4)] transition shrink-0">
+                <Rocket className="w-4.5 h-4.5 text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
               </div>
-              <p className="text-[10px] text-slate-300 font-semibold tracking-wider mt-1 hidden xl:block uppercase whitespace-nowrap">
-                Space Mission Decision Support
-              </p>
-            </div>
-          </NavLink>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-2 leading-none">
+                  <span className="font-mono text-base sm:text-lg font-extrabold tracking-widest text-white group-hover:text-cyan-300 transition whitespace-nowrap">
+                    AMDSF
+                  </span>
+                  <span className="text-[10px] font-bold font-mono px-1.5 sm:px-2 py-0.5 rounded bg-cyan-950/70 text-cyan-300 border border-cyan-400/40 shrink-0">
+                    OPS-01
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-300 font-semibold tracking-wider mt-1 hidden xl:block uppercase whitespace-nowrap">
+                  Space Mission Decision Support
+                </p>
+              </div>
+            </NavLink>
+          </div>
 
-          {/* CENTER SECTION: Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center justify-center flex-1 min-w-0 gap-0.5 xl:gap-1 2xl:gap-1.5 px-1">
+          {/* COLUMN 2: CENTER SECTION - Desktop Navigation Links */}
+          <nav className="navbar-links">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
                 <NavLink
                   key={item.path}
                   to={item.path}
+                  title={item.name}
                   className={({ isActive }) =>
                     `px-1.5 xl:px-2 2xl:px-2.5 py-1.5 rounded-lg text-xs 2xl:text-sm font-semibold transition-all duration-200 flex items-center gap-1 xl:gap-1.5 whitespace-nowrap shrink-0 ${
                       isActive
@@ -174,21 +177,21 @@ export default function Navbar() {
                     }`
                   }
                 >
-                  <Icon className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-cyan-400/90 shrink-0" />
-                  <span className="hidden 2xl:inline">{item.name}</span>
-                  <span className="hidden xl:inline 2xl:hidden">{item.shortName}</span>
-                  <span className="inline xl:hidden">{item.compactName}</span>
+                  <Icon className="hidden xl:inline-block w-3.5 h-3.5 2xl:w-4 2xl:h-4 text-cyan-400/90 shrink-0" />
+                  <span className="nav-label-full">{item.name}</span>
+                  <span className="nav-label-short">{item.shortName}</span>
+                  <span className="nav-label-compact">{item.compactName}</span>
                 </NavLink>
               );
             })}
           </nav>
 
-          {/* RIGHT SECTION: Active Mission Badge (Fully visible, guaranteed padding & shrink-0) */}
-          <div className="flex items-center justify-end gap-2.5 sm:gap-3 shrink-0">
+          {/* COLUMN 3: RIGHT SECTION - Active Mission Badge (Isolated Column, Guaranteed Spacing) */}
+          <div className="navbar-mission">
             {activeMission ? (
               <Link
                 to="/planning"
-                className="flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-xl bg-black/75 border border-cyan-500/60 hover:border-cyan-400 text-cyan-300 transition shadow-lg shadow-cyan-950/40 backdrop-blur-md shrink-0 group min-w-fit"
+                className="flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-xl bg-black/75 border border-cyan-500/60 hover:border-cyan-400 text-cyan-300 transition shadow-lg shadow-cyan-950/40 backdrop-blur-md group shrink-0 min-w-fit"
                 title={`Active Mission: ${activeMission.mission_id} (${activeMission.mission_name || 'Configured'})`}
               >
                 <div className="w-2 h-2 rounded-full bg-cyan-400 animate-ping shrink-0 shadow-[0_0_8px_#00f2fe]" />

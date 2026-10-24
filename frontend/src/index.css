@@ -226,3 +226,82 @@ body {
   background-color: #0a0f16;
 }
 
+/* AMDSF Top Navigation 3-Column Grid Architecture */
+.navbar-main {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(8px, 1.2vw, 16px);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.navbar-brand {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-links {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(3px, 0.5vw, 8px);
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .navbar-links {
+    display: flex;
+  }
+}
+
+.navbar-mission {
+  position: static;
+  justify-self: end;
+  flex-shrink: 0;
+  white-space: nowrap;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive label toggles */
+.nav-label-full {
+  display: none;
+}
+.nav-label-short {
+  display: inline;
+}
+.nav-label-compact {
+  display: none;
+}
+
+@media (min-width: 1750px) {
+  .nav-label-full {
+    display: inline;
+  }
+  .nav-label-short {
+    display: none;
+  }
+  .nav-label-compact {
+    display: none;
+  }
+}
+
+@media (max-width: 1220px) {
+  .nav-label-full {
+    display: none;
+  }
+  .nav-label-short {
+    display: none;
+  }
+  .nav-label-compact {
+    display: inline;
+  }
+}
+
+
