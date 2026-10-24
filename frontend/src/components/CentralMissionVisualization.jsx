@@ -69,12 +69,12 @@ export default function CentralMissionVisualization({
   const a = 340; // Semi-major axis
   const b = 135; // Semi-minor axis (perspective inclination)
   const rad = (orbitAngle * Math.PI) / 180;
-  
+
   // Inclined ellipse rotation
   const inclRad = ((orbit.inclination_deg ? (orbit.inclination_deg - 90) * 0.25 : 8) * Math.PI) / 180;
   const rawX = a * Math.cos(rad);
   const rawY = b * Math.sin(rad);
-  
+
   const satX = cx + rawX * Math.cos(inclRad) - rawY * Math.sin(inclRad);
   const satY = cy + rawX * Math.sin(inclRad) + rawY * Math.cos(inclRad);
 
@@ -257,7 +257,7 @@ export default function CentralMissionVisualization({
             <g transform="translate(240, 335)">
               <rect x="0" y="0" width="160" height="38" rx="6" fill="#040918" stroke="#f59e0b" strokeWidth="1" opacity="0.9" />
               <text x="10" y="16" fill="#f59e0b" fontSize="10" fontFamily="JetBrains Mono" fontWeight="bold">
-                🚀 LAUNCH ORIGIN
+                LAUNCH ORIGIN
               </text>
               <text x="10" y="30" fill="#cbd5e1" fontSize="9" fontFamily="JetBrains Mono">
                 {launch.site?.split('—')[0]?.trim() || "Launch Site"}
@@ -271,7 +271,7 @@ export default function CentralMissionVisualization({
             {/* Swath Footprint Circle on Earth */}
             <circle cx="475" cy="205" r="32" fill="url(#targetSwath)" stroke="#00f2fe" strokeWidth="1.2" opacity="0.85" />
             <circle cx="475" cy="205" r="4" fill="#00f2fe" filter="url(#softGlow)" />
-            
+
             {/* Connecting annotation line */}
             <line x1="475" y1="205" x2="570" y2="135" stroke="#00f2fe" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.85" />
 
@@ -279,7 +279,7 @@ export default function CentralMissionVisualization({
             <g transform="translate(560, 105)">
               <rect x="0" y="0" width="180" height="48" rx="6" fill="#040918" stroke="#00f2fe" strokeWidth="1" opacity="0.95" />
               <text x="10" y="16" fill="#00f2fe" fontSize="10" fontFamily="JetBrains Mono" fontWeight="bold">
-                🎯 OBSERVATION TARGET
+                OBSERVATION TARGET
               </text>
               <text x="10" y="30" fill="#ffffff" fontSize="10" fontFamily="JetBrains Mono" fontWeight="bold">
                 {target.area || target.region || "Target Zone"}
@@ -393,12 +393,10 @@ export default function CentralMissionVisualization({
           <div className="p-2.5 rounded-xl bg-black/60 border border-white/10 flex flex-col justify-between">
             <span className="text-[10px] text-slate-400 uppercase font-semibold">MISSION STATUS</span>
             <div className="my-1 flex items-center justify-center gap-1.5">
-              <span className={`w-2 h-2 rounded-full ${
-                recommendation.risk_level === 'HIGH' ? 'bg-rose-400' : 'bg-emerald-400 animate-pulse'
-              }`} />
-              <span className={`text-sm sm:text-base font-bold ${
-                recommendation.risk_level === 'HIGH' ? 'text-rose-400' : 'text-emerald-400'
-              }`}>
+              <span className={`w-2 h-2 rounded-full ${recommendation.risk_level === 'HIGH' ? 'bg-rose-400' : 'bg-emerald-400 animate-pulse'
+                }`} />
+              <span className={`text-sm sm:text-base font-bold ${recommendation.risk_level === 'HIGH' ? 'text-rose-400' : 'text-emerald-400'
+                }`}>
                 {recommendation.readiness && recommendation.readiness >= 75 ? 'READY' : 'REVIEW'}
               </span>
             </div>
@@ -409,13 +407,12 @@ export default function CentralMissionVisualization({
           <div className="p-2.5 rounded-xl bg-black/60 border border-white/10 flex flex-col justify-between">
             <span className="text-[10px] text-slate-400 uppercase font-semibold">DEBRIS CONJUNCTION</span>
             <div className="my-1 flex items-center justify-center">
-              <span className={`px-2.5 py-0.5 rounded text-xs sm:text-sm font-bold border ${
-                debris.risk_level === 'HIGH'
+              <span className={`px-2.5 py-0.5 rounded text-xs sm:text-sm font-bold border ${debris.risk_level === 'HIGH'
                   ? 'bg-rose-950/80 text-rose-300 border-rose-500/40'
                   : debris.risk_level === 'LOW'
-                  ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40'
-                  : 'bg-amber-950/80 text-amber-300 border-amber-500/40'
-              }`}>
+                    ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40'
+                    : 'bg-amber-950/80 text-amber-300 border-amber-500/40'
+                }`}>
                 {debris.risk_level || 'MEDIUM'}
               </span>
             </div>
@@ -426,13 +423,12 @@ export default function CentralMissionVisualization({
           <div className="p-2.5 rounded-xl bg-black/60 border border-white/10 flex flex-col justify-between">
             <span className="text-[10px] text-slate-400 uppercase font-semibold">SPACE WEATHER</span>
             <div className="my-1 flex items-center justify-center">
-              <span className={`px-2.5 py-0.5 rounded text-xs sm:text-sm font-bold border ${
-                weather.geomagnetic_storm
+              <span className={`px-2.5 py-0.5 rounded text-xs sm:text-sm font-bold border ${weather.geomagnetic_storm
                   ? 'bg-rose-950/80 text-rose-300 border-rose-500/40'
                   : weather.kp_index > 4
-                  ? 'bg-amber-950/80 text-amber-300 border-amber-500/40'
-                  : 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40'
-              }`}>
+                    ? 'bg-amber-950/80 text-amber-300 border-amber-500/40'
+                    : 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40'
+                }`}>
                 {weather.geomagnetic_storm ? 'ADVERSE' : weather.kp_index > 4 ? 'WATCH' : 'NOMINAL'}
               </span>
             </div>
@@ -443,11 +439,10 @@ export default function CentralMissionVisualization({
           <div className="p-2.5 rounded-xl bg-black/60 border border-white/10 flex flex-col justify-between">
             <span className="text-[10px] text-slate-400 uppercase font-semibold">MISSION FEASIBILITY</span>
             <div className="my-1 flex items-center justify-center">
-              <span className={`px-2.5 py-0.5 rounded text-xs sm:text-sm font-bold border ${
-                feasibility.feasible === false
+              <span className={`px-2.5 py-0.5 rounded text-xs sm:text-sm font-bold border ${feasibility.feasible === false
                   ? 'bg-rose-950/80 text-rose-300 border-rose-500/40'
                   : 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40'
-              }`}>
+                }`}>
                 {feasibility.feasible === false ? 'REVIEW' : 'FEASIBLE'}
               </span>
             </div>
