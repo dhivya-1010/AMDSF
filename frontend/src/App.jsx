@@ -9,6 +9,7 @@ import SpaceWeather from './pages/SpaceWeather';
 import MissionFeasibility from './pages/MissionFeasibility';
 import CoverageAnalysis from './pages/CoverageAnalysis';
 import MissionRecommendation from './pages/MissionRecommendation';
+import PipelineArchitecture from './pages/PipelineArchitecture';
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
               <Route path="/feasibility" element={<MissionFeasibility />} />
               <Route path="/coverage" element={<CoverageAnalysis />} />
               <Route path="/recommendation" element={<MissionRecommendation />} />
+              <Route path="/architecture" element={<PipelineArchitecture />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>

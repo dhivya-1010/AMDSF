@@ -94,10 +94,10 @@ export default function CentralMissionVisualization({
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#00f2fe]" />
             <span className="font-bold text-white tracking-wider uppercase">
-              FIGURE 1: MISSION OPERATIONS CONSOLE — ORBITAL SITUATIONAL DISPLAY
+              ORBITAL SITUATIONAL DISPLAY // LEO FLIGHT ENVELOPE
             </span>
           </div>
-          <span className="hidden md:inline text-cyan-400/60 font-semibold px-2 py-0.5 rounded bg-cyan-950/50 border border-cyan-500/20 text-[10px]">
+          <span className="hidden md:inline text-amber-400 font-semibold px-2 py-0.5 rounded bg-amber-950/40 border border-amber-500/30 text-[10px]">
             REAL-TIME PROPAGATION
           </span>
         </div>
