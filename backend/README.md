@@ -42,3 +42,9 @@ backend/
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
+
+### Request Validation
+Mission request schemas validate geographic coordinates, coverage percentages,
+orbital parameters, and positive mission lifecycle values before analysis begins.
+Invalid requests are rejected by FastAPI with a `422 Unprocessable Entity`
+response instead of being passed to the domain agents.
