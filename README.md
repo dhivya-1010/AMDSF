@@ -71,6 +71,17 @@ Space mission planning is inherently multi-domain and high-risk. Mission operato
 - **Visualization**: React-Leaflet & Leaflet (Orbital maps), Recharts (Trade-off analytics)
 - **Database Ready**: Schema structured for PostgreSQL / PostGIS extension
 
+### Orbital screening assumptions
+
+The debris agent uses live CelesTrak GP/TLE records when available, validates
+checksums, propagates with SGP4, converts TEME to ITRS/ECEF using Astropy, and
+performs preliminary cKDTree candidate screening at synchronized timestamps.
+It reports measured separation and TCA only; no collision probability is
+reported because covariance data and a validated probability method are not
+implemented. Provide mission TLE lines in the `orbit` request fields to run a
+measured mission-vs-catalog screen. Missing or stale data is reported
+explicitly and never replaced with fabricated orbital positions.
+
 ---
 
 ## 📁 Project Directory Structure

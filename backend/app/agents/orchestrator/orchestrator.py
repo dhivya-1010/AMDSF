@@ -23,7 +23,11 @@ class MissionOrchestrator:
             eccentricity=req.orbit.eccentricity,
             mission_duration=req.mission.duration_days,
             preferred_date=req.constraints.preferred_launch_date,
-            flexibility_days=req.constraints.launch_window_flexibility_days
+            flexibility_days=req.constraints.launch_window_flexibility_days,
+            mission_tle=req.orbit.model_dump(),
+            propagation_interval_minutes=req.orbit.propagation_interval_minutes,
+            propagation_step_seconds=req.orbit.propagation_step_seconds,
+            screening_distance_km=req.orbit.screening_distance_km,
         )
         
         weather_task = weather_agent.analyze(

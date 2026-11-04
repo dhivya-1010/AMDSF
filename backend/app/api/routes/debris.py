@@ -5,6 +5,6 @@ router = APIRouter(prefix="/debris", tags=["Debris Agent"])
 
 @router.get("/status")
 async def get_debris_status():
-    """Runs a baseline status evaluation for the Orbital Debris Agent"""
+    """Runs a status evaluation; without a mission TLE it reports insufficient data."""
     result = await debris_agent.analyze(target_orbit_km=550.0)
     return result

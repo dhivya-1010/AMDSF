@@ -28,6 +28,13 @@ class OrbitalConfigurationSchema(BaseModel):
     eccentricity: float = Field(default=0.0, description="Orbital eccentricity (0.0 = circular)")
     raan: Optional[str] = Field(default="Auto", description="Right Ascension of Ascending Node")
     arg_perigee: Optional[str] = Field(default="Auto", description="Argument of Perigee")
+    norad_id: Optional[int] = Field(default=None, description="Mission spacecraft NORAD catalog ID")
+    object_name: Optional[str] = Field(default=None, description="Mission spacecraft catalog name")
+    tle_line1: Optional[str] = Field(default=None, description="Mission spacecraft TLE line 1")
+    tle_line2: Optional[str] = Field(default=None, description="Mission spacecraft TLE line 2")
+    propagation_interval_minutes: int = Field(default=90, ge=1, le=1440)
+    propagation_step_seconds: int = Field(default=60, ge=1, le=3600)
+    screening_distance_km: float = Field(default=25.0, gt=0, le=1000)
 
 class MissionLifecycleSchema(BaseModel):
     duration_days: int = Field(default=365, description="Operational lifespan in days")

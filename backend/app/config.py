@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     # Operational configuration
     REQUEST_TIMEOUT_SECONDS: float = 6.0
     ALLOW_ORIGINS: list[str] = ["*"]
+    DEBRIS_PROPAGATION_INTERVAL_MINUTES: int = 90
+    DEBRIS_PROPAGATION_STEP_SECONDS: int = 60
+    DEBRIS_SCREENING_DISTANCE_KM: float = 25.0
+    DEBRIS_MAX_CATALOG_OBJECTS: int = 2000
+    DEBRIS_MAX_TLE_AGE_DAYS: int = 7
 
     class Config:
         env_file = ".env"

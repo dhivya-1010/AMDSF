@@ -5,7 +5,7 @@ class DebrisObjectItem(BaseModel):
     name: str
     norad_id: Optional[int] = None
     distance_km: float
-    relative_velocity_kms: float
+    relative_velocity_kms: Optional[float] = None
     risk: str
     inclination_deg: Optional[float] = None
 

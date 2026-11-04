@@ -21,21 +21,18 @@ export default function DebrisOrbitalEnvironment({
   mission = {},
   status = 'COMPLETED'
 }) {
-  const [selectedDebris, setSelectedDebris] = useState('COSMOS 2251 DEB');
+  const [selectedDebris, setSelectedDebris] = useState(null);
   const [timeStep, setTimeStep] = useState(2); // 0, 1, 2, 3 for timeline
 
   const altKm = mission.orbit?.altitude_km || 550;
   const incDeg = mission.orbit?.inclination_deg || 97.6;
-  const objectsAnalyzed = debris.objects_analyzed || (status === 'COMPLETED' ? 8420 : 0);
-  const nearbyCount = debris.nearby_objects ?? (status === 'COMPLETED' ? 12 : 0);
-  const riskLevel = debris.risk_level || (status === 'COMPLETED' ? 'MEDIUM' : 'STANDBY');
+  const objectsAnalyzed = debris.objects_analyzed ?? 0;
+  const nearbyCount = debris.nearby_objects ?? 0;
+  const riskLevel = debris.risk_level || 'INSUFFICIENT_DATA';
+  const details = debris.details || {};
+  const closest = details.encounters?.[0];
 
-  const debrisObjects = debris.orbital_objects || [
-    { name: "COSMOS 2251 DEB", norad_id: 34105, distance_km: 4.2, relative_velocity_kms: 12.4, risk: "HIGH ATTENTION", inclination_deg: 74.0, tca: "T+14h 22m" },
-    { name: "SL-16 R/B Fragment", norad_id: 22676, distance_km: 14.8, relative_velocity_kms: 7.8, risk: "MONITORED", inclination_deg: 71.0, tca: "T+26h 04m" },
-    { name: "CZ-4B Splinter", norad_id: 26040, distance_km: 8.1, relative_velocity_kms: 10.2, risk: "NEARBY", inclination_deg: 98.8, tca: "T+38h 15m" },
-    { name: "FENGYUN 1C DEB", norad_id: 30894, distance_km: 22.4, relative_velocity_kms: 14.1, risk: "SAFE", inclination_deg: 99.1, tca: "T+49h 50m" }
-  ];
+  const debrisObjects = debris.orbital_objects || [];
 
   // Pipeline stages
   const pipeline = [
@@ -43,16 +40,18 @@ export default function DebrisOrbitalEnvironment({
     { code: 'SGP4', title: 'SGP4 PROPAGATOR', desc: 'Perturbation Dynamics' },
     { code: 'FILTER', title: 'SPATIAL FILTER', desc: 'KD-Tree 25km Bounds' },
     { code: 'TCA', title: 'TCA SOLVER', desc: 'Conjunction Min-Dist' },
-    { code: 'SCREEN', title: 'SCREENING MATRIX', desc: 'Probability Density' }
+    { code: 'SCREEN', title: 'SCREENING MATRIX', desc: 'Measured miss distance' }
   ];
 
   // TCA events timeline
-  const tcaEvents = [
-    { id: 'TCA-1', obj: 'COSMOS 2251 DEB', time: 'T+14h 22m', dist: '4.2 km', risk: 'HIGH ATTENTION', color: '#f43f5e' },
-    { id: 'TCA-2', obj: 'SL-16 R/B Frag', time: 'T+26h 04m', dist: '14.8 km', risk: 'MONITORED', color: '#00f2fe' },
-    { id: 'TCA-3', obj: 'CZ-4B Splinter', time: 'T+38h 15m', dist: '8.1 km', risk: 'NEARBY', color: '#f59e0b' },
-    { id: 'TCA-4', obj: 'FENGYUN 1C', time: 'T+49h 50m', dist: '22.4 km', risk: 'SAFE', color: '#10b981' },
-  ];
+  const tcaEvents = (details.encounters || []).map((event, index) => ({
+    id: `TCA-${index + 1}`,
+    obj: event.name,
+    time: event.tca,
+    dist: `${event.minimum_separation_km} km`,
+    risk: riskLevel,
+    color: riskLevel === 'HIGH' ? '#f43f5e' : '#00f2fe',
+  }));
 
   return (
     <div className="w-full space-y-4">
@@ -111,7 +110,7 @@ export default function DebrisOrbitalEnvironment({
                 BAND: <strong className="text-cyan-300">{altKm} km</strong>
               </span>
               <span className="px-2 py-0.5 rounded bg-rose-950/60 border border-rose-500/40 text-rose-300 font-bold">
-                TCA ACTIVE
+                {closest ? 'TCA MEASURED' : 'NO TCA DATA'}
               </span>
             </div>
           </div>
@@ -331,7 +330,7 @@ export default function DebrisOrbitalEnvironment({
               <div className="p-3 rounded-xl bg-slate-950/80 border border-white/10">
                 <span className="text-[9px] text-slate-400 block uppercase">SCREENING STATUS</span>
                 <span className="text-sm font-bold text-cyan-300 mt-1.5 block px-1 py-0.5 rounded bg-cyan-950/60 border border-cyan-500/30">
-                  MONITORED
+                  {riskLevel}
                 </span>
                 <span className="text-[8.5px] text-slate-400 mt-0.5 block">Auto CAM Ready</span>
               </div>
@@ -345,19 +344,19 @@ export default function DebrisOrbitalEnvironment({
               <div className="p-2.5 rounded-lg bg-rose-950/30 border border-rose-500/40 text-xs font-mono space-y-1">
                 <div className="flex justify-between">
                   <span className="text-slate-300">Object:</span>
-                  <span className="font-bold text-white">COSMOS 2251 DEB</span>
+                  <span className="font-bold text-white">{closest?.name || 'No measured encounter'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-300">Miss Distance:</span>
-                  <span className="font-bold text-rose-400">4.2 km</span>
+                  <span className="font-bold text-rose-400">{closest ? `${closest.minimum_separation_km} km` : '—'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-300">Rel. Velocity:</span>
-                  <span className="font-bold text-amber-300">12.4 km/s</span>
+                  <span className="font-bold text-amber-300">Not calculated</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-300">Max Collision Prob:</span>
-                  <span className="font-bold text-cyan-300">1.4 × 10⁻⁴</span>
+                  <span className="font-bold text-cyan-300">Not assessed</span>
                 </div>
               </div>
             </div>

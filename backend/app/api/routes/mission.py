@@ -64,7 +64,11 @@ async def analyze_debris(mission_id: str):
         eccentricity=m.orbit.eccentricity,
         mission_duration=m.mission.duration_days,
         preferred_date=m.constraints.preferred_launch_date,
-        flexibility_days=m.constraints.launch_window_flexibility_days
+        flexibility_days=m.constraints.launch_window_flexibility_days,
+        mission_tle=m.orbit.model_dump(),
+        propagation_interval_minutes=m.orbit.propagation_interval_minutes,
+        propagation_step_seconds=m.orbit.propagation_step_seconds,
+        screening_distance_km=m.orbit.screening_distance_km,
     )
     # Store / update in analysis cache
     if mission_id not in ANALYSIS_RESULTS_DB:
