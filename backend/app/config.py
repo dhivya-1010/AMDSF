@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     DEBRIS_SCREENING_DISTANCE_KM: float = 25.0
     DEBRIS_MAX_CATALOG_OBJECTS: int = 2000
     DEBRIS_MAX_TLE_AGE_DAYS: int = 7
+    DEBRIS_MAX_CACHE_AGE_HOURS: float = 24.0
+    DEBRIS_TCA_REFINEMENT_TOLERANCE_SECONDS: float = 1.0
 
     class Config:
         env_file = ".env"

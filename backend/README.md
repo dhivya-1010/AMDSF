@@ -48,8 +48,16 @@ uvicorn app.main:app --reload --port 8000
 The debris agent retrieves GP/TLE records from CelesTrak, validates both line
 checksums, propagates valid records with SGP4, transforms TEME coordinates to
 ITRS/ECEF with Astropy, and uses `scipy.spatial.cKDTree` at matching epochs to
-screen candidates. Results are preliminary miss-distance measurements only:
-they are not covariance-aware collision probabilities.
+screen candidates. Around a sampled minimum, it optionally performs a bounded
+one-dimensional numerical refinement by evaluating fresh SGP4 states; the
+reported refined TCA remains a local sampled-window estimate, not a continuous
+high-precision solution.
+
+Results are preliminary miss-distance and relative-velocity measurements only:
+they are not covariance-aware collision probabilities and do not provide
+operational collision-avoidance decisions. SGP4 errors remain associated with
+their object and UTC epoch, while object validity is tracked independently at
+each timestamp.
 
 Mission requests may provide `orbit.norad_id`, `orbit.object_name`,
 `orbit.tle_line1`, and `orbit.tle_line2`. The interval, time step, and screening

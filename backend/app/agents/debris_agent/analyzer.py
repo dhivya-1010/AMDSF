@@ -36,7 +36,8 @@ class DebrisAnalyzer:
             orbital_objects=[{
                 "name": item["name"], "norad_id": item["norad_id"],
                 "distance_km": item["minimum_separation_km"],
-                "relative_velocity_kms": 0.0, "risk": risk_level,
+                "relative_velocity_kms": item.get("relative_velocity_kms"),
+                "risk": risk_level,
             } for item in encounters],
             details={
                 "encounters": encounters,
@@ -50,5 +51,8 @@ class DebrisAnalyzer:
                 "is_cached": catalog_data.get("is_cached", False),
                 "stale_tle_count": catalog_data.get("stale_tle_count", 0),
                 "invalid_tle_count": catalog_data.get("invalid_tle_count", 0),
+                "future_tle_count": catalog_data.get("future_tle_count", 0),
+                "catalog_propagated_object_count": catalog_data.get("catalog_propagated_object_count", 0),
+                "cache_age_seconds": catalog_data.get("cache_age_seconds"),
             },
         )
