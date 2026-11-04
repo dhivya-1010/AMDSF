@@ -6,7 +6,6 @@ import { useMission } from '../context/MissionContext';
 import MissionContextBar from '../components/MissionContextBar';
 import StarfieldCanvas from '../components/StarfieldCanvas';
 import BackgroundScene from '../components/BackgroundScene';
-import ResearchPipeline from '../components/ResearchPipeline';
 import SolarWeatherEnvironment from '../components/SolarWeatherEnvironment';
 import { demoAnalysisData } from '../data/demoData';
 
@@ -76,7 +75,6 @@ export default function SpaceWeather() {
         </div>
 
         {/* Global Architecture Pipeline */}
-        <ResearchPipeline currentStep="agents" compact={true} />
 
         {/* FIGURE 5: SUN-CENTERED HELIOPHYSICS & SOLAR WEATHER ENVIRONMENT */}
         <SolarWeatherEnvironment

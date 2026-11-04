@@ -8,7 +8,6 @@ import {
 import { useMission } from '../context/MissionContext';
 import MissionPlanningBackground from '../components/MissionPlanningBackground';
 import OrbitalEllipsePreview from '../components/OrbitalEllipsePreview';
-import ResearchPipeline from '../components/ResearchPipeline';
 
 // Curated geographic regions & spaceports dataset
 const CURATED_TARGETS = {
@@ -241,7 +240,6 @@ export default function MissionPlanning() {
         </div>
 
         {/* Global Architecture Pipeline (Figure 3) */}
-        <ResearchPipeline currentStep="profile" compact={true} theme="laboratory" />
 
         {/* 2-COLUMN MAIN CONTENT: LEFT (CONSTRUCTION WORKFLOW), RIGHT (ORBITAL PREVIEW) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">

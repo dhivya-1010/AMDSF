@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 import { useMission } from '../context/MissionContext';
 import DashboardBackground from '../components/DashboardBackground';
-import ResearchPipeline from '../components/ResearchPipeline';
 import CentralMissionVisualization from '../components/CentralMissionVisualization';
 import AgentSystemTopology from '../components/AgentSystemTopology';
 import { demoAnalysisData } from '../data/demoData';
@@ -128,7 +127,6 @@ export default function Dashboard() {
         </div>
 
         {/* Visual Pipeline Architecture (Figure 3 / Reusable Flow) */}
-        <ResearchPipeline currentStep="all" compact={true} />
 
         {/* FIGURE 1: LARGE CENTRAL MISSION VISUALIZATION & COMPACT INDICATORS */}
         <CentralMissionVisualization

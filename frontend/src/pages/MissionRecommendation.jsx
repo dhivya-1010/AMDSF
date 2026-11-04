@@ -7,7 +7,6 @@ import { useMission } from '../context/MissionContext';
 import MissionContextBar from '../components/MissionContextBar';
 import StarfieldCanvas from '../components/StarfieldCanvas';
 import BackgroundScene from '../components/BackgroundScene';
-import ResearchPipeline from '../components/ResearchPipeline';
 import OrchestrationFlowVisualization from '../components/OrchestrationFlowVisualization';
 import { demoAnalysisData } from '../data/demoData';
 
@@ -73,7 +72,6 @@ export default function MissionRecommendation() {
         </div>
 
         {/* Global Architecture Pipeline (Step highlighted: Orchestration & Recommendation) */}
-        <ResearchPipeline currentStep="orchestration" compact={true} />
 
         {/* HERO DECISION SUMMARY BADGE (COMPACT HUD STRIP) */}
         <div className="bg-slate-950/90 border border-cyan-500/40 rounded-2xl p-4 sm:p-5 shadow-2xl backdrop-blur-2xl hud-corner-ticks font-mono">

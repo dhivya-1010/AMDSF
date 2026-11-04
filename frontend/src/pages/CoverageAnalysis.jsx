@@ -6,7 +6,6 @@ import { useMission } from '../context/MissionContext';
 import MissionContextBar from '../components/MissionContextBar';
 import StarfieldCanvas from '../components/StarfieldCanvas';
 import BackgroundScene from '../components/BackgroundScene';
-import ResearchPipeline from '../components/ResearchPipeline';
 import CoverageMapVisualization from '../components/CoverageMapVisualization';
 import { demoAnalysisData } from '../data/demoData';
 
@@ -103,7 +102,6 @@ export default function CoverageAnalysis() {
         </div>
 
         {/* Global Architecture Pipeline */}
-        <ResearchPipeline currentStep="agents" compact={true} />
 
         {/* FIGURE 7: INTERACTIVE GROUND TRACK & COVERAGE MAP WITH REVISIT TIMELINE */}
         <CoverageMapVisualization

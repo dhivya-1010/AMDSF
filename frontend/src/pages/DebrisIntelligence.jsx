@@ -6,7 +6,6 @@ import { useMission } from '../context/MissionContext';
 import MissionContextBar from '../components/MissionContextBar';
 import StarfieldCanvas from '../components/StarfieldCanvas';
 import BackgroundScene from '../components/BackgroundScene';
-import ResearchPipeline from '../components/ResearchPipeline';
 import DebrisOrbitalEnvironment from '../components/DebrisOrbitalEnvironment';
 import { demoAnalysisData } from '../data/demoData';
 
@@ -76,7 +75,6 @@ export default function DebrisIntelligence() {
         </div>
 
         {/* Global Architecture Pipeline (Step highlighted: Domain Agents) */}
-        <ResearchPipeline currentStep="agents" compact={true} />
 
         {/* FIGURE 4: HIGHLY VISUAL ORBITAL DEBRIS ENVIRONMENT & CONJUNCTION GEOMETRY */}
         <DebrisOrbitalEnvironment
