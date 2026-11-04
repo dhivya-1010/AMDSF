@@ -515,31 +515,27 @@ export default function CinematicScrollStory({ activeMission, analysisResults })
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 font-mono text-xs">
                 <div className="p-3.5 rounded-xl bg-black/50 border border-white/10">
                   <span className="text-slate-400 text-[10px] block uppercase">Tracked Objects in Shell</span>
-                  <span className="text-xl font-bold text-white mt-1 block">4,280+</span>
-                  <span className="text-[10px] text-emerald-400 mt-0.5 block">Cataloged & Propagated</span>
+                  <span className="text-xl font-bold text-white mt-1 block">Unavailable</span>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">Requires current TLE catalog</span>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-black/50 border border-white/10">
                   <span className="text-slate-400 text-[10px] block uppercase">Minimum Miss Distance</span>
-                  <span className="text-xl font-bold text-amber-300 mt-1 block">12.4 km</span>
-                  <span className="text-[10px] text-amber-400 mt-0.5 block">Safe Radial Clearance</span>
+                  <span className="text-xl font-bold text-amber-300 mt-1 block">Unavailable</span>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">No measured encounter loaded</span>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-black/50 border border-white/10 col-span-2 sm:col-span-1">
                   <span className="text-slate-400 text-[10px] block uppercase">Collision Probability</span>
-                  <span className="text-xl font-bold text-emerald-300 mt-1 block">1.2 × 10⁻⁶</span>
-                  <span className="text-[10px] text-emerald-400 mt-0.5 block">Nominal Safety Envelope</span>
+                  <span className="text-xl font-bold text-emerald-300 mt-1 block">Not calculated</span>
+                  <span className="text-[10px] text-slate-400 mt-0.5 block">No covariance model implemented</span>
                 </div>
               </div>
 
               {/* Sample Conjunction Object List */}
               <div className="space-y-2 font-mono text-xs">
                 <span className="text-[11px] text-slate-400 uppercase font-semibold">Closest Tracked Objects:</span>
-                {[
-                  { name: 'COSMOS 2251 DEB (NORAD 34005)', distance: '12.4 km', velocity: '14.8 km/s', status: 'MONITORED' },
-                  { name: 'FENGYUN 1C DEB (NORAD 31112)', distance: '18.9 km', velocity: '15.1 km/s', status: 'MONITORED' },
-                  { name: 'STARLINK-1420 (NORAD 45521)', distance: '34.2 km', velocity: '7.6 km/s', status: 'NOMINAL' },
-                ].map((obj, i) => (
+                {[].map((obj, i) => (
                   <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-black/40 border border-white/5 text-slate-300">
                     <span className="font-semibold text-white">{obj.name}</span>
                     <div className="flex items-center gap-4 text-[11px]">
@@ -815,7 +811,7 @@ export default function CinematicScrollStory({ activeMission, analysisResults })
                 <span>Explainable Orchestrator Assessment</span>
               </div>
               <p className="leading-relaxed text-slate-200">
-                The mission profile demonstrates strong compliance across all four specialized domains. Conjunction vectors remain safely outside the 5 km exclusion envelope (12.4 km miss-distance). Heliophysical flux readings (Kp: 2.3) verify low thermospheric drag expansion. Launcher propulsion margin provides +280 m/s delta-V safety buffer for orbital insertion.
+                No validated cross-domain result is available in this view. Run the backend analysis with complete mission and external data inputs before interpreting any readiness, conjunction, weather, or coverage claim.
               </p>
             </div>
           </div>

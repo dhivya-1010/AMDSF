@@ -8,7 +8,6 @@ import { useMission } from '../context/MissionContext';
 import DashboardBackground from '../components/DashboardBackground';
 import CentralMissionVisualization from '../components/CentralMissionVisualization';
 import AgentSystemTopology from '../components/AgentSystemTopology';
-import { demoAnalysisData } from '../data/demoData';
 
 export default function Dashboard() {
   const {
@@ -20,48 +19,8 @@ export default function Dashboard() {
     createAndSetActiveMission
   } = useMission();
 
-  // Baseline scenario fallback if no active mission exists in storage
-  const currentMission = activeMission || {
-    mission_id: "AMDSF-2026-LEO-01",
-    mission_name: "LEO Earth Observation & Environmental Monitoring",
-    objective: {
-      type: "EARTH_OBSERVATION",
-      description: "High-resolution optical & radar observation of target territorial zones."
-    },
-    target: {
-      area: "Metropolitan & Coastal Zone",
-      region: "Maritime District",
-      country: "Regional Coast",
-      latitude: 13.0827,
-      longitude: 80.2707,
-      coverage_requirement: 85,
-      coverage_radius_km: 120
-    },
-    launch: {
-      site: "Satish Dhawan Space Centre — Sriharikota",
-      launch_site_code: "SDSC_SHAR",
-      country: "Spaceport Facility",
-      vehicle: "AeroSpace Small-Lift I"
-    },
-    orbit: {
-      type: "Sun-Synchronous (SSO)",
-      altitude_km: 550,
-      inclination_deg: 97.6,
-      eccentricity: 0.0012
-    },
-    mission: {
-      payload_mass_kg: 250,
-      budget_musd: 50,
-      duration_days: 365
-    },
-    constraints: {
-      preferred_launch_date: "2026-10-15",
-      launch_window_flexibility_days: 3,
-      maximum_acceptable_risk: "MEDIUM"
-    }
-  };
-
-  const results = analysisResults || demoAnalysisData;
+  const currentMission = activeMission;
+  const results = analysisResults;
   const orchestrator = results?.orchestrator || {};
   const recommendation = orchestrator?.recommendation || {};
 
@@ -85,7 +44,7 @@ export default function Dashboard() {
               </span>
             </div>
             <p className="text-xs text-slate-300 mt-0.5 font-mono">
-              Active Flight Profile: <strong className="text-cyan-300">{currentMission.mission_name}</strong> [{currentMission.mission_id}]
+              Active Flight Profile:               <strong className="text-cyan-300">{currentMission?.mission_name || 'No mission configured'}</strong> [{currentMission?.mission_id || '—'}]
             </p>
           </div>
 
@@ -99,7 +58,7 @@ export default function Dashboard() {
             </Link>
 
             <button
-              onClick={() => runFullAnalysis(currentMission)}
+              onClick={() => currentMission && runFullAnalysis(currentMission)}
               disabled={loading}
               className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-mono text-xs font-bold flex items-center gap-2 shadow-xl shadow-cyan-500/25 transition disabled:opacity-50"
             >

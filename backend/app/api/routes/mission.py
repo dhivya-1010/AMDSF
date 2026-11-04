@@ -107,6 +107,7 @@ async def analyze_feasibility(mission_id: str):
         mission_duration=m.mission.duration_days,
         budget=m.mission.budget_musd,
         launch_site=m.launch.site,
+        launch_site_code=m.launch.launch_site_code,
         launch_vehicle=m.launch.vehicle
     )
     if mission_id not in ANALYSIS_RESULTS_DB:

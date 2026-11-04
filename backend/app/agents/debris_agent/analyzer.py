@@ -10,7 +10,7 @@ class DebrisAnalyzer:
         threshold = context.get("screening_distance_km", 25.0)
         closest = encounters[0] if encounters else None
         if closest is None:
-            risk_level, risk_score = "INSUFFICIENT_DATA", 0.0
+            risk_level, risk_score = "INSUFFICIENT_DATA", None
         elif closest["minimum_separation_km"] <= 5:
             risk_level, risk_score = "HIGH", 1.0
         elif closest["minimum_separation_km"] <= threshold:
@@ -25,6 +25,7 @@ class DebrisAnalyzer:
         if not catalog_data.get("valid_tle_count"):
             factors.append("No valid TLE records were available for propagation.")
         return DebrisAnalysisResult(
+            status="completed" if closest else "insufficient_data",
             objects_analyzed=catalog_data.get("valid_tle_count", 0),
             nearby_objects=len(encounters),
             risk_level=risk_level,
@@ -54,5 +55,6 @@ class DebrisAnalyzer:
                 "future_tle_count": catalog_data.get("future_tle_count", 0),
                 "catalog_propagated_object_count": catalog_data.get("catalog_propagated_object_count", 0),
                 "cache_age_seconds": catalog_data.get("cache_age_seconds"),
+                "data_status": "available" if closest else "insufficient_data",
             },
         )

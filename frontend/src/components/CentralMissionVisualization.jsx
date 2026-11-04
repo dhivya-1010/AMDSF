@@ -25,20 +25,9 @@ export default function CentralMissionVisualization({
   const [orbitAngle, setOrbitAngle] = useState(45); // in degrees
   const animationFrameRef = useRef(null);
 
-  const orbit = mission.orbit || { altitude_km: 550, inclination_deg: 97.6, type: 'LEO' };
-  const target = mission.target || {
-    area: 'Target Area',
-    region: 'Region',
-    country: 'Country',
-    latitude: 13.08,
-    longitude: 80.27,
-    coverage_radius_km: 120
-  };
-  const launch = mission.launch || {
-    site: 'Launch Spaceport',
-    country: 'Spaceport Country',
-    launch_site_code: 'LC-01'
-  };
+  const orbit = mission.orbit || {};
+  const target = mission.target || {};
+  const launch = mission.launch || {};
 
   const debris = analysisResults?.debris || {};
   const weather = analysisResults?.weather || {};
@@ -71,7 +60,7 @@ export default function CentralMissionVisualization({
   const rad = (orbitAngle * Math.PI) / 180;
 
   // Inclined ellipse rotation
-  const inclRad = ((orbit.inclination_deg ? (orbit.inclination_deg - 90) * 0.25 : 8) * Math.PI) / 180;
+  const inclRad = (((orbit.inclination_deg || 0) - 90) * 0.25 * Math.PI) / 180;
   const rawX = a * Math.cos(rad);
   const rawY = b * Math.sin(rad);
 
@@ -400,7 +389,7 @@ export default function CentralMissionVisualization({
                 {recommendation.readiness && recommendation.readiness >= 75 ? 'READY' : 'REVIEW'}
               </span>
             </div>
-            <span className="text-[9px] text-slate-400">Readiness: {recommendation.readiness || 82}%</span>
+            <span className="text-[9px] text-slate-400">Readiness:             {recommendation.readiness ?? '—'}{recommendation.readiness != null ? '%' : ''}</span>
           </div>
 
           {/* 2. DEBRIS */}
@@ -413,10 +402,10 @@ export default function CentralMissionVisualization({
                     ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40'
                     : 'bg-amber-950/80 text-amber-300 border-amber-500/40'
                 }`}>
-                {debris.risk_level || 'MEDIUM'}
+                {debris.risk_level || 'UNAVAILABLE'}
               </span>
             </div>
-            <span className="text-[9px] text-slate-400">{debris.nearby_objects || 12} proximate objs</span>
+            <span className="text-[9px] text-slate-400">{debris.nearby_objects ?? '—'} proximate objs</span>
           </div>
 
           {/* 3. WEATHER */}
@@ -432,7 +421,7 @@ export default function CentralMissionVisualization({
                 {weather.geomagnetic_storm ? 'ADVERSE' : weather.kp_index > 4 ? 'WATCH' : 'NOMINAL'}
               </span>
             </div>
-            <span className="text-[9px] text-slate-400">Kp: {weather.kp_index || 3.2} • Solar: QUIET</span>
+            <span className="text-[9px] text-slate-400">Kp: {weather.kp_index ?? '—'} • Solar: {weather.solar_activity || '—'}</span>
           </div>
 
           {/* 4. FEASIBILITY */}
@@ -446,7 +435,7 @@ export default function CentralMissionVisualization({
                 {feasibility.feasible === false ? 'REVIEW' : 'FEASIBLE'}
               </span>
             </div>
-            <span className="text-[9px] text-slate-400">Cost: ${feasibility.estimated_cost_m || 16}M</span>
+            <span className="text-[9px] text-slate-400">Cost: {feasibility.estimated_cost_m != null ? `$${feasibility.estimated_cost_m}M` : 'Unavailable'}</span>
           </div>
 
           {/* 5. COVERAGE */}
@@ -454,10 +443,10 @@ export default function CentralMissionVisualization({
             <span className="text-[10px] text-slate-400 uppercase font-semibold">TARGET COVERAGE</span>
             <div className="my-1 flex items-center justify-center">
               <span className="text-sm sm:text-base font-bold text-cyan-300">
-                {coverage.coverage_percent || 97}%
+                {coverage.coverage_percent != null ? `${coverage.coverage_percent}%` : '—'}
               </span>
             </div>
-            <span className="text-[9px] text-slate-400">Revisit: {coverage.revisit_time_minutes || 110} min</span>
+            <span className="text-[9px] text-slate-400">Revisit: {coverage.revisit_time_minutes != null ? `${coverage.revisit_time_minutes} min` : 'Unavailable'}</span>
           </div>
         </div>
       </div>

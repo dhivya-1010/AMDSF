@@ -59,7 +59,7 @@ Space mission planning is inherently multi-domain and high-risk. Mission operato
 | **Orbital Debris Intelligence Agent** | Conjunction vector tracking, relative velocity calculation, catalog proximity filtering | [CelesTrak](https://celestrak.org/), [LeoLabs](https://platform.leolabs.space/) |
 | **Space Weather Intelligence Agent** | Real-time planetary Kp index, coronal mass ejection (CME) tracking, geomagnetic storm classification | [NOAA SWPC](https://www.swpc.noaa.gov/), [NASA DONKI](https://kauai.ccmc.gsfc.nasa.gov/DONKI/) |
 | **Mission Feasibility Agent** | Staging selection, payload-to-orbit Delta-V margins, fairing envelopes, budget estimation | Prototype Estimation Models |
-| **Coverage Intelligence Agent** | Ground footprint geometry, sensor swath access, revisit intervals, population reach | Regional Demographic & Swath Models |
+| **Coverage Intelligence Agent** | Deterministic swath prototype estimate from configured orbit/target inputs | No population dataset or access-event propagator configured |
 | **Mission Orchestrator** | Multi-objective trade-off arbitration, conflict resolution, Pareto-optimal launch window selection | Rule-Based Reasoning Engine |
 
 ---
@@ -141,7 +141,7 @@ AMDSF/
 │   │   ├── services/
 │   │   │   └── api.js                 # Axios service client
 │   │   ├── data/
-│   │   │   └── demoData.js            # Initial demonstration baseline
+│   │   │   └── pipelineArchitectureData.js
 │   │   ├── App.jsx
 │   │   ├── main.jsx
 │   │   └── index.css
@@ -189,7 +189,7 @@ To configure external API keys (NASA, LeoLabs):
    NASA_API_KEY=your_nasa_donki_key_here
    LEOLABS_API_KEY=your_leolabs_key_here
    ```
-*If keys are omitted, AMDSF automatically runs in graceful baseline cache/simulation mode.*
+*If an external feed is unavailable, AMDSF reports the affected domain as unavailable; it does not synthesize current telemetry.*
 
 ---
 
@@ -200,4 +200,20 @@ To configure external API keys (NASA, LeoLabs):
 3. Click **"Run Mission Analysis"**.
 4. Observe the concurrent execution across all 4 domain agents.
 5. Inspect the **Mission Orchestrator** synthesized reasoning, trade-offs, and **Explainable Recommendation**.
-6. Drill down into individual agent pages (**Debris Intelligence**, **Space Weather**, **Feasibility**, **Coverage**) to view underlying telemetry and interactive maps.
+6. Drill down into individual agent pages (**Debris Intelligence**, **Space Weather**, **Feasibility**, **Coverage**) to view returned measurements, prototype estimates, provenance, and unavailable-data states.
+
+### Numerical integrity and scientific scope
+
+The production frontend has no client-side simulation fallback. Dashboard values are
+either mission inputs, backend results, or explicit unavailable states. Debris
+screening requires a valid mission TLE and a current valid catalog; weather
+classification requires successful NOAA SWPC and NASA DONKI retrievals. Coverage
+currently reports a deterministic swath prototype estimate only: population reach,
+revisit time, ground track, and sensor access events are not calculated.
+
+The orchestrator uses the configured 30/25/25/20 rule-based readiness weights
+only when the required domain outputs are available. Missing or insufficient
+measurements force a review state and do not receive full safety credit. A
+preferred date is displayed as a simulation epoch, not as a validated launch
+window. No collision probability, covariance-aware assessment, or operational
+launch recommendation is implemented.

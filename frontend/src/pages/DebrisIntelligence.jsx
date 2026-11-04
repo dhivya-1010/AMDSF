@@ -7,21 +7,13 @@ import MissionContextBar from '../components/MissionContextBar';
 import StarfieldCanvas from '../components/StarfieldCanvas';
 import BackgroundScene from '../components/BackgroundScene';
 import DebrisOrbitalEnvironment from '../components/DebrisOrbitalEnvironment';
-import { demoAnalysisData } from '../data/demoData';
 
 export default function DebrisIntelligence() {
   const { activeMission, analysisResults, analysisStatus, runSingleAgent } = useMission();
 
-  const currentMission = activeMission || {
-    mission_id: "AMDSF-2026-LEO-01",
-    mission_name: "LEO Earth Observation & Environmental Monitoring",
-    orbit: { altitude_km: 550, inclination_deg: 97.6, type: "SSO" },
-    launch: { site: "Satish Dhawan Space Centre (SDSC SHAR)" },
-    constraints: { preferred_launch_date: "2026-10-15" }
-  };
-
-  const debris = analysisResults?.debris || demoAnalysisData.debris;
-  const status = analysisStatus?.debris || 'COMPLETED';
+  const currentMission = activeMission;
+  const debris = analysisResults?.debris;
+  const status = analysisStatus?.debris || 'NOT_RUN';
   const isRunning = status === 'RUNNING';
 
   return (

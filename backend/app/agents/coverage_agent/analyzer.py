@@ -2,7 +2,7 @@ from typing import Dict, Any, List
 from .models import CoverageAnalysisResult
 
 class CoverageAnalyzer:
-    """Calculates ground footprint, revisit frequency, and demographic coverage over specific geographic coordinates"""
+    """Produces a deterministic swath prototype estimate, not validated access geometry."""
 
     @classmethod
     def evaluate(
@@ -40,10 +40,6 @@ class CoverageAnalyzer:
 
         coverage_pct = min(99.4, max(65.0, round(base_coverage + geom_boost, 1)))
 
-        # Approximate demographic access based on area radius
-        population_approx = int((coverage_radius_km ** 2) * 3.14159 * 280) # rough urban/semi-urban density model
-        pop_formatted = f"{round(population_approx / 1000000, 1)}M" if population_approx >= 1000000 else f"{round(population_approx / 1000, 0)}k"
-
         gaps = 1 if coverage_pct >= 92.0 else (2 if coverage_pct >= 80.0 else 3)
         satisfies_req = coverage_pct >= coverage_requirement
 
@@ -57,23 +53,28 @@ class CoverageAnalyzer:
         factors = [
             f"Sensor swath width ({swath_width_km}km) covers {coverage_radius_km}km target radius with {coverage_pct}% area reach",
             f"Orbital period ({round(90 + target_orbit_km * 0.03, 1)} min) provides {passes_per_day} ground track passes per day over target",
-            f"Target demographic access: ~{pop_formatted} population served in {target_area}",
-            f"Identified {gaps} minor off-nadir revisit gap intervals over {mission_duration}-day lifecycle"
+            "Population reach is unavailable because no attributed population dataset is configured.",
+            "Revisit events are unavailable because no orbit/sensor access propagator is configured."
         ]
 
         return CoverageAnalysisResult(
             agent="Coverage Intelligence Agent",
-            status="completed",
+            status="prototype_estimate",
             coverage_percent=coverage_pct,
-            population_served=population_approx,
-            population_served_formatted=pop_formatted,
+            population_served=None,
+            population_served_formatted=None,
             coverage_gaps=gaps,
             target_region=location_label,
             summary=summary,
             factors=factors,
-            revisit_time_minutes=revisit_time_min,
+            revisit_time_minutes=None,
             ground_track_passes_per_day=passes_per_day,
             details={
+                "data_status": "prototype_estimate",
+                "validated_orbital_coverage": False,
+                "population_data_status": "unavailable",
+                "revisit_data_status": "unavailable",
+                "formula": "coverage = clamp(85 + min(1, swath / max(50, 2 * radius)) * 12 + inclination_boost, 65, 99.4)",
                 "elevation_mask_deg": 5.0,
                 "swath_width_km": swath_width_km,
                 "target_coordinates": f"{latitude}° N, {longitude}° E",

@@ -45,6 +45,7 @@ class MissionOrchestrator:
             mission_duration=req.mission.duration_days,
             budget=req.mission.budget_musd,
             launch_site=req.launch.site,
+            launch_site_code=req.launch.launch_site_code,
             launch_vehicle=req.launch.vehicle
         )
         

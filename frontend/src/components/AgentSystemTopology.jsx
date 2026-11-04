@@ -168,11 +168,11 @@ export default function AgentSystemTopology({
               <div className="bg-black/50 p-2 rounded-lg border border-white/10 text-[11px] font-mono space-y-1">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Risk Index:</span>
-                  <span className="font-bold text-amber-400">{debris.risk_level || "MEDIUM"}</span>
+                  <span className="font-bold text-amber-400">{debris.risk_level || "UNAVAILABLE"}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Tracked:</span>
-                  <span className="text-white">{debris.objects_analyzed || 8420} objs</span>
+                  <span className="text-white">{debris.objects_analyzed ?? '—'} objs</span>
                 </div>
               </div>
               <p className="text-[11px] font-mono text-slate-300 mt-2 line-clamp-2 leading-relaxed">
@@ -211,11 +211,11 @@ export default function AgentSystemTopology({
               <div className="bg-black/50 p-2 rounded-lg border border-white/10 text-[11px] font-mono space-y-1">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Kp Index:</span>
-                  <span className="font-bold text-cyan-300">Kp {weather.kp_index || 3.2}</span>
+                  <span className="font-bold text-cyan-300">Kp {weather.kp_index ?? '—'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Solar Flux:</span>
-                  <span className="text-emerald-400 font-bold">{weather.solar_activity ? weather.solar_activity.split('/')[0] : 'QUIET'}</span>
+                  <span className="text-emerald-400 font-bold">{weather.solar_activity || '—'}</span>
                 </div>
               </div>
               <p className="text-[11px] font-mono text-slate-300 mt-2 line-clamp-2 leading-relaxed">
@@ -254,11 +254,11 @@ export default function AgentSystemTopology({
               <div className="bg-black/50 p-2 rounded-lg border border-white/10 text-[11px] font-mono space-y-1">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Vehicle:</span>
-                  <span className="font-bold text-white truncate max-w-[90px]">{feasibility.launch_vehicle || "Small-Lift I"}</span>
+                  <span className="font-bold text-white truncate max-w-[90px]">{feasibility.launch_vehicle || "—"}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Est. Cost:</span>
-                  <span className="text-emerald-400 font-bold">${feasibility.estimated_cost_m || 16}M</span>
+                  <span className="text-emerald-400 font-bold">{feasibility.estimated_cost_m != null ? `$${feasibility.estimated_cost_m}M` : '—'}</span>
                 </div>
               </div>
               <p className="text-[11px] font-mono text-slate-300 mt-2 line-clamp-2 leading-relaxed">
@@ -297,11 +297,11 @@ export default function AgentSystemTopology({
               <div className="bg-black/50 p-2 rounded-lg border border-white/10 text-[11px] font-mono space-y-1">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Swath Coverage:</span>
-                  <span className="font-bold text-cyan-300">{coverage.coverage_percent || 93.8}%</span>
+                  <span className="font-bold text-cyan-300">{coverage.coverage_percent != null ? `${coverage.coverage_percent}%` : '—'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Revisit Time:</span>
-                  <span className="text-white">{coverage.revisit_time_minutes || 110} min</span>
+                  <span className="text-white">{coverage.revisit_time_minutes != null ? `${coverage.revisit_time_minutes} min` : 'Unavailable'}</span>
                 </div>
               </div>
               <p className="text-[11px] font-mono text-slate-300 mt-2 line-clamp-2 leading-relaxed">
@@ -343,13 +343,13 @@ export default function AgentSystemTopology({
           </div>
 
           <div className="text-xl sm:text-2xl font-bold font-mono text-white mb-2">
-            {recommendation.launch_window || "Recommended Launch Window: Tuesday 10:30 UTC"}
+            {recommendation.launch_window || "Calculation pending"}
           </div>
 
           <div className="flex items-center justify-center gap-4 text-xs font-mono text-slate-300">
-            <span>Readiness: <strong className="text-emerald-400">{recommendation.readiness || 82}%</strong></span>
+            <span>Readiness: <strong className="text-emerald-400">{recommendation.readiness ?? '—'}{recommendation.readiness != null ? '%' : ''}</strong></span>
             <span>•</span>
-            <span>Risk Level: <strong className="text-amber-400">{recommendation.risk_level || "LOW-MEDIUM"}</strong></span>
+            <span>Risk Level: <strong className="text-amber-400">{recommendation.risk_level || "—"}</strong></span>
           </div>
 
           <div className="mt-3 pt-3 border-t border-white/10 text-[10px] font-mono text-slate-400 flex items-center justify-center gap-1.5">

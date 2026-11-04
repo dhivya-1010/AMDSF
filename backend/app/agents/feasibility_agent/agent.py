@@ -17,6 +17,7 @@ class FeasibilityAgent:
         mission_duration: int = 365,
         budget: float = 50.0,
         launch_site: str = "Satish Dhawan Space Centre",
+        launch_site_code: Optional[str] = None,
         launch_vehicle: str = "AUTO"
     ) -> FeasibilityAnalysisResult:
         result = FeasibilityAnalyzer.evaluate(
@@ -25,6 +26,7 @@ class FeasibilityAgent:
             mission_duration_days=mission_duration,
             budget_m=budget,
             launch_site=launch_site,
+            launch_site_code=launch_site_code,
             launch_vehicle_pref=launch_vehicle
         )
         result.mission_id = mission_id

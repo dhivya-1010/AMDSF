@@ -1,5 +1,5 @@
 import httpx
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Any, Optional
 from app.config import settings
 from app.core.logging import logger
@@ -26,33 +26,24 @@ class DonkiService:
                     return {
                         "source": "NASA DONKI (Live API)",
                         "is_live": True,
+                        "status": "available",
+                        "retrieved_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                        "query_start": start_date,
+                        "query_end": end_date,
                         "events_count": len(events) if isinstance(events, list) else 0,
                         "recent_events": events[:5] if isinstance(events, list) else []
                     }
         except Exception as e:
-            logger.warning(f"NASA DONKI live API request failed ({e}). Falling back to cached space weather baseline.")
+            logger.warning(f"NASA DONKI live API request failed ({e}). No synthetic CME events will be returned.")
 
-        # Fallback realistic baseline data
         return {
-            "source": "NASA DONKI (Reference Telemetry Baseline)",
+            "source": "NASA DONKI",
             "is_live": False,
-            "events_count": 2,
-            "recent_events": [
-                {
-                    "activityID": "2026-09-14T08:24:00-CME-001",
-                    "catalog": "DONKI_CME",
-                    "startTime": "2026-09-14T08:24Z",
-                    "note": "Partial halo CME observed by SOHO/LASCO C3. Estimated earthward velocity 420 km/s.",
-                    "associated_flare": "C3.4"
-                },
-                {
-                    "activityID": "2026-09-11T16:10:00-CME-001",
-                    "catalog": "DONKI_CME",
-                    "startTime": "2026-09-11T16:10Z",
-                    "note": "Narrow limb CME, non-Earth directed.",
-                    "associated_flare": "B8.9"
-                }
-            ]
+            "status": "unavailable",
+            "retrieved_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+            "events_count": None,
+            "recent_events": [],
+            "error": "NASA DONKI retrieval failed",
         }
 
 donki_service = DonkiService()

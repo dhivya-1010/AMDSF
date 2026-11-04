@@ -7,48 +7,14 @@ import MissionContextBar from '../components/MissionContextBar';
 import StarfieldCanvas from '../components/StarfieldCanvas';
 import BackgroundScene from '../components/BackgroundScene';
 import CoverageMapVisualization from '../components/CoverageMapVisualization';
-import { demoAnalysisData } from '../data/demoData';
 
 export default function CoverageAnalysis() {
   const { activeMission, analysisResults, analysisStatus, runSingleAgent } = useMission();
 
-  const currentMission = activeMission || {
-    mission_id: "AMDSF-2026-LEO-01",
-    mission_name: "LEO Earth Observation & Environmental Monitoring",
-    orbit: { altitude_km: 550, inclination_deg: 97.6, type: "SSO" },
-    target: {
-      area: "Metropolitan & Coastal Zone",
-      region: "Maritime District",
-      country: "Regional Coast",
-      latitude: 13.0827,
-      longitude: 80.2707,
-      coverage_requirement: 85,
-      coverage_radius_km: 120
-    },
-    constraints: { preferred_launch_date: "2026-10-15" }
-  };
-
-  const coverage = analysisResults?.coverage || demoAnalysisData.coverage;
-  const mapData = analysisResults?.orchestrator?.map_data || {
-    satellite_position: { lat: 13.08, lng: 80.27, alt_km: 550, label: "AMDSF Satellite" },
-    coverage_radius_km: 300,
-    ground_track: [
-      { lat: -2.0, lng: 50.0, name: "Launch Ascent" },
-      { lat: 8.0, lng: 70.0, name: "Telemetry Node" },
-      { lat: 13.08, lng: 80.27, name: "Observation Target" },
-      { lat: 28.0, lng: 100.0, name: "Descending Arc" }
-    ],
-    debris_markers: [
-      { lat: 17.2, lng: 74.0, name: "COSMOS 2251 DEB", risk: "Medium", type: "debris" },
-      { lat: 9.3, lng: 88.0, name: "SL-16 R/B Frag", risk: "Low", type: "debris" }
-    ],
-    ground_stations: [
-      { lat: -2.0, lng: 50.0, name: "Launch Spaceport" },
-      { lat: 16.0, lng: 81.0, name: "Regional Downlink Station" }
-    ]
-  };
-
-  const status = analysisStatus?.coverage || 'COMPLETED';
+  const currentMission = activeMission;
+  const coverage = analysisResults?.coverage;
+  const mapData = analysisResults?.orchestrator?.map_data;
+  const status = analysisStatus?.coverage || 'NOT_RUN';
   const isRunning = status === 'RUNNING';
 
   return (

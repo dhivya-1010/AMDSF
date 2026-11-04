@@ -21,23 +21,23 @@ export default function FeasibilityConstraintWheel({
   mission = {},
   status = 'COMPLETED'
 }) {
-  const isFeasible = feasibility.feasible !== undefined ? feasibility.feasible : true;
-  const payloadMass = mission.mission?.payload_mass_kg || 250;
-  const payloadCap = feasibility.payload_capacity_kg || (payloadMass <= 350 ? 350 : 1500);
-  const budget = mission.mission?.budget_musd || 50;
-  const estCost = feasibility.estimated_cost_m || Math.round(budget * 0.32 * 10) / 10 || 16;
-  const orbitAlt = mission.orbit?.altitude_km || 550;
-  const orbitType = mission.orbit?.type || 'LEO';
-  const vehicle = feasibility.launch_vehicle || (mission.launch?.vehicle !== 'AUTO' ? mission.launch?.vehicle : 'AeroSpace Small-Lift I');
-  const deltaV = feasibility.details?.delta_v_budget_ms || 3670;
-  const deltaVMargin = feasibility.propulsion_margin_percent || 13.5;
+  const isFeasible = feasibility.feasible === true;
+  const payloadMass = mission.mission?.payload_mass_kg ?? 0;
+  const payloadCap = feasibility.payload_capacity_kg ?? 0;
+  const budget = mission.mission?.budget_musd ?? 0;
+  const estCost = feasibility.estimated_cost_m ?? 0;
+  const orbitAlt = mission.orbit?.altitude_km ?? 0;
+  const orbitType = mission.orbit?.type || '—';
+  const vehicle = feasibility.launch_vehicle || '—';
+  const deltaV = feasibility.details?.delta_v_budget_ms ?? 0;
+  const deltaVMargin = feasibility.propulsion_margin_percent ?? 0;
 
   // Radar chart data for the 4 orthogonal dimensions (0 to 100 normalized score)
   const radarData = [
     { subject: 'PAYLOAD', score: Math.min(100, Math.round((1 - payloadMass / (payloadCap * 1.2)) * 100 + 40)), fullMark: 100 },
-    { subject: 'ORBIT (Δv)', score: 92, fullMark: 100 },
+    { subject: 'ORBIT (Δv)', score: feasibility.details ? 92 : 0, fullMark: 100 },
     { subject: 'BUDGET', score: Math.min(100, Math.round((1 - estCost / budget) * 100 + 35)), fullMark: 100 },
-    { subject: 'VEHICLE', score: 95, fullMark: 100 },
+    { subject: 'VEHICLE', score: feasibility.launch_vehicle ? 95 : 0, fullMark: 100 },
   ];
 
   // Constraint Matrix rows
@@ -45,7 +45,7 @@ export default function FeasibilityConstraintWheel({
     { name: 'Payload Mass', req: `${payloadMass} kg`, eval: `${payloadCap} kg Capacity`, margin: `+${((payloadCap - payloadMass) / payloadCap * 100).toFixed(0)}% Margin`, status: 'PASS', icon: Rocket },
     { name: 'Target Orbit', req: `${orbitAlt} km ${orbitType}`, eval: `${deltaV} m/s Required`, margin: `+${deltaVMargin}% Δv Reserve`, status: 'PASS', icon: Target },
     { name: 'Lifecycle Budget', req: `$${budget}M Limit`, eval: `$${estCost}M Est. Cost`, margin: `$${(budget - estCost).toFixed(1)}M Reserve`, status: isFeasible ? 'PASS' : 'HOLD', icon: DollarSign },
-    { name: 'Launch Vehicle', req: 'Compatible Class', eval: vehicle, margin: '3.2m Fairing Valid', status: 'PASS', icon: Wrench },
+    { name: 'Launch Vehicle', req: 'Compatible Class', eval: vehicle, margin: feasibility.details?.fairing_static_envelope || 'Unavailable', status: feasibility.launch_vehicle ? 'PASS' : 'HOLD', icon: Wrench },
   ];
 
   return (

@@ -8,21 +8,12 @@ import MissionContextBar from '../components/MissionContextBar';
 import StarfieldCanvas from '../components/StarfieldCanvas';
 import BackgroundScene from '../components/BackgroundScene';
 import OrchestrationFlowVisualization from '../components/OrchestrationFlowVisualization';
-import { demoAnalysisData } from '../data/demoData';
 
 export default function MissionRecommendation() {
   const { activeMission, analysisResults, analysisStatus, runFullAnalysis, loading } = useMission();
 
-  const currentMission = activeMission || {
-    mission_id: "AMDSF-2026-LEO-01",
-    mission_name: "LEO Earth Observation & Environmental Monitoring",
-    orbit: { altitude_km: 550, inclination_deg: 97.6, type: "SSO" },
-    launch: { site: "Satish Dhawan Space Centre (SDSC SHAR)" },
-    target: { area: "Metropolitan & Coastal Zone", country: "Coastal Region" },
-    constraints: { preferred_launch_date: "2026-10-15" }
-  };
-
-  const results = analysisResults || demoAnalysisData;
+  const currentMission = activeMission;
+  const results = analysisResults;
   const orchestrator = results?.orchestrator || {};
   const recommendation = orchestrator?.recommendation || {};
 
@@ -81,7 +72,7 @@ export default function MissionRecommendation() {
                 PARETO-OPTIMAL FLIGHT WINDOW IDENTIFIED
               </span>
               <div className="text-xl sm:text-3xl font-bold text-white tracking-tight">
-                {recommendation.launch_window || `${currentMission.constraints?.preferred_launch_date} +1d — 10:30 UTC`}
+                {recommendation.launch_window || 'Calculation pending'}
               </div>
               <span className="text-xs text-slate-400 mt-1 block">
                 Facility: <strong className="text-white">{currentMission.launch?.site}</strong> • Phasing Offset: <strong className="text-cyan-300">+14h (Conjunction Clearance)</strong>
@@ -92,7 +83,7 @@ export default function MissionRecommendation() {
               <div className="p-3 rounded-xl bg-black/60 border border-white/10 text-center">
                 <span className="text-[9px] text-slate-400 uppercase block">Flight Readiness</span>
                 <span className="text-xl sm:text-2xl font-bold text-emerald-400 block mt-0.5">
-                  {recommendation.readiness || 82}%
+                  {recommendation.readiness ?? '—'}{recommendation.readiness != null ? '%' : ''}
                 </span>
               </div>
               <div className="p-3 rounded-xl bg-black/60 border border-white/10 text-center">
@@ -104,7 +95,7 @@ export default function MissionRecommendation() {
               <div className="p-3 rounded-xl bg-emerald-950/70 border border-emerald-500/40 text-center">
                 <span className="text-[9px] text-emerald-300 uppercase block font-semibold">Status</span>
                 <span className="text-sm font-bold text-emerald-300 block mt-1.5 px-2 py-0.5 rounded bg-emerald-900/50">
-                  GO / REVIEW
+                  {orchestrator?.status === 'Incomplete Data' ? 'DATA REVIEW' : 'CALCULATED'}
                 </span>
               </div>
             </div>

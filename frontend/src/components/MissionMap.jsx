@@ -67,23 +67,16 @@ const lowDebrisIcon = createDotIcon('#38bdf8', 12);
 const stationIcon = createDotIcon('#10b981', 14);
 
 export default function MissionMap({ mapData, missionName }) {
-  const defaultPos = [20.5937, 78.9629];
-  const satPos = mapData?.satellite_position 
-    ? [mapData.satellite_position.lat, mapData.satellite_position.lng] 
-    : defaultPos;
-
-  const polylineCoords = mapData?.ground_track?.map(pt => [pt.lat, pt.lng]) || [
-    [0.5937, 38.9629],
-    [15.5937, 63.9629],
-    [20.5937, 78.9629],
-    [35.5937, 108.9629]
-  ];
+  const satPos = mapData?.satellite_position
+    ? [mapData.satellite_position.lat, mapData.satellite_position.lng]
+    : [0, 0];
+  const polylineCoords = mapData?.ground_track?.map(pt => [pt.lat, pt.lng]) || [];
 
   return (
     <div className="relative w-full h-[400px] rounded-lg overflow-hidden border border-space-700 bg-space-900 shadow-xl">
       <div className="absolute top-3 left-3 z-[1000] bg-space-900/90 backdrop-blur-md px-3 py-1.5 rounded-md border border-space-700/80 text-xs font-mono text-cyan-300 flex items-center gap-2 shadow-lg">
         <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-        <span>LIVE GROUND TRACK & CONJUNCTION GEOMETRY</span>
+        <span>COMPUTED GROUND TRACK & CONJUNCTION GEOMETRY</span>
       </div>
 
       <div className="absolute bottom-3 right-3 z-[1000] bg-space-900/90 backdrop-blur-md px-3 py-2 rounded-md border border-space-700/80 text-xs font-mono flex flex-col gap-1.5 shadow-lg">
@@ -135,7 +128,7 @@ export default function MissionMap({ mapData, missionName }) {
         {/* Satellite Coverage Circle */}
         <Circle
           center={satPos}
-          radius={(mapData?.coverage_radius_km || 1200) * 1000}
+          radius={(mapData?.coverage_radius_km || 0) * 1000}
           pathOptions={{
             color: '#00f2fe',
             fillColor: '#00f2fe',
@@ -150,7 +143,7 @@ export default function MissionMap({ mapData, missionName }) {
           <Popup>
             <div className="text-xs p-1 font-sans">
               <div className="font-bold text-cyan-400 text-sm">{mapData?.satellite_position?.label || missionName || "Satellite"}</div>
-              <div className="text-slate-300 mt-1">Orbit Altitude: <span className="text-white font-mono">{mapData?.satellite_position?.alt_km || 550} km LEO</span></div>
+              <div className="text-slate-300 mt-1">Orbit Altitude: <span className="text-white font-mono">{mapData?.satellite_position?.alt_km ?? '—'} km</span></div>
               <div className="text-slate-300">Ground Sub-Point: <span className="text-white font-mono">{satPos[0]}°N, {satPos[1]}°E</span></div>
               <div className="text-emerald-400 font-semibold mt-1">Status: Active Track</div>
             </div>

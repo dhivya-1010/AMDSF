@@ -6,14 +6,34 @@ class WeatherAnalyzer:
 
     @staticmethod
     def evaluate(swpc_data: Dict[str, Any], donki_data: Dict[str, Any]) -> WeatherAnalysisResult:
-        kp = swpc_data.get("latest_kp", 3.2)
-        cme_count = donki_data.get("events_count", 0)
+        kp = swpc_data.get("latest_kp")
+        cme_count = donki_data.get("events_count")
         recent_cme_list = donki_data.get("recent_events", [])
         
         sources = [
             swpc_data.get("source", "NOAA SWPC"),
             donki_data.get("source", "NASA DONKI")
         ]
+
+        if kp is None or cme_count is None:
+            return WeatherAnalysisResult(
+                status="unavailable",
+                kp_index=None,
+                solar_activity="UNAVAILABLE",
+                cme_activity=False,
+                geomagnetic_storm=False,
+                risk_level="UNAVAILABLE",
+                risk_score=None,
+                data_sources=sources,
+                summary="Space-weather classification is unavailable because one or more external feeds failed.",
+                factors=["NOAA SWPC and NASA DONKI results are required for this assessment."],
+                recent_events=recent_cme_list,
+                details={
+                    "data_status": "unavailable",
+                    "swpc": swpc_data,
+                    "donki": donki_data,
+                },
+            )
 
         has_cme = cme_count > 0
         is_geomagnetic_storm = kp >= 5.0
@@ -63,9 +83,9 @@ class WeatherAnalyzer:
             factors=factors,
             recent_events=recent_cme_list,
             details={
-                "solar_wind_speed_kms": 395.0,
-                "radio_flux_f10_7": 142.5,
-                "proton_density_cm3": 5.4,
-                "estimated_atmospheric_drag": "Nominal (1.02x baseline)"
+                "data_status": "available",
+                "swpc_retrieved_at": swpc_data.get("retrieved_at"),
+                "swpc_source_timestamp": swpc_data.get("timestamp"),
+                "donki_retrieved_at": donki_data.get("retrieved_at"),
             }
         )

@@ -202,7 +202,7 @@ export const PIPELINE_STAGES = [
     ],
     processing: [
       { step: 'Explainable AI (XAI) Synthesis', desc: 'Converts multi-objective mathematical proofs into actionable aerospace operational narratives.' },
-      { step: 'Launch Window Scheduling', desc: 'Generates primary T₀ window (e.g., Preferred Epoch +1d — 10:30 UTC) and secondary fallback slots.' },
+      { step: 'Launch Window Scheduling', desc: 'Reports the configured simulation epoch; validated launch-window times require a dedicated access and trajectory calculation.' },
       { step: 'Tactical Mitigation Formulation', desc: 'Synthesizes domain-specific risk mitigation procedures (secondary radar passes, pre-loaded CAM delta-v vectors).' },
       { step: 'Executive Briefing Assembly', desc: 'Assembles full ISO/IEEE 42010 decision dossier with charts, trade-off comparisons, and confidence indices.' }
     ],

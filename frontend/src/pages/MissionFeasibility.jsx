@@ -7,22 +7,13 @@ import MissionContextBar from '../components/MissionContextBar';
 import StarfieldCanvas from '../components/StarfieldCanvas';
 import BackgroundScene from '../components/BackgroundScene';
 import FeasibilityConstraintWheel from '../components/FeasibilityConstraintWheel';
-import { demoAnalysisData } from '../data/demoData';
 
 export default function MissionFeasibility() {
   const { activeMission, analysisResults, analysisStatus, runSingleAgent } = useMission();
 
-  const currentMission = activeMission || {
-    mission_id: "AMDSF-2026-LEO-01",
-    mission_name: "LEO Earth Observation & Environmental Monitoring",
-    orbit: { altitude_km: 550, inclination_deg: 97.6, type: "SSO" },
-    launch: { site: "Satish Dhawan Space Centre (SDSC SHAR)", vehicle: "AeroSpace Small-Lift I" },
-    mission: { payload_mass_kg: 250, budget_musd: 50, duration_days: 365 },
-    constraints: { preferred_launch_date: "2026-10-15" }
-  };
-
-  const feasibility = analysisResults?.feasibility || demoAnalysisData.feasibility;
-  const status = analysisStatus?.feasibility || 'COMPLETED';
+  const currentMission = activeMission;
+  const feasibility = analysisResults?.feasibility;
+  const status = analysisStatus?.feasibility || 'NOT_RUN';
   const isRunning = status === 'RUNNING';
 
   return (

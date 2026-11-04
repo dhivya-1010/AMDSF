@@ -16,7 +16,7 @@ class DebrisAnalysisResult(BaseModel):
     objects_analyzed: int
     nearby_objects: int
     risk_level: str
-    risk_score: float
+    risk_score: Optional[float] = None
     data_source: str
     summary: str
     factors: List[str]
