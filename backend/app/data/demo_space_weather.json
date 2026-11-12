@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "dataset_type": "demonstration",
+    "label": "DEMONSTRATION DATA (Offline Fallback Sample)",
+    "note": "Clearly labelled demonstration space-weather sample used only when external feeds and cached observations are unavailable or demonstration mode is selected.",
+    "generated_at": "2026-11-12T06:00:00Z"
+  },
+  "swpc": {
+    "latest_kp": 2.33,
+    "timestamp": "2026-11-12T06:00:00Z",
+    "solar_flux_f107": 132.0,
+    "solar_flux_timestamp": "2026-11-11T20:00:00Z",
+    "solar_wind_speed_kms": 473.0,
+    "solar_wind_bz_gsm": 1.0,
+    "solar_wind_bt": 5.0,
+    "noaa_scales": {
+      "R": {"Scale": "0", "Text": "none"},
+      "S": {"Scale": "0", "Text": "none"},
+      "G": {"Scale": "0", "Text": "none"}
+    },
+    "alerts": [
+      {
+        "product_id": "DEMO-ALTEF3",
+        "issue_datetime": "2026-11-12 06:00:00",
+        "message": "DEMONSTRATION SAMPLE: Quiet-to-unsettled geomagnetic conditions (Kp 2.33)."
+      }
+    ],
+    "kp_history": [
+      {"time_tag": "2026-11-11T18:00:00Z", "Kp": 1.67},
+      {"time_tag": "2026-11-11T21:00:00Z", "Kp": 2.00},
+      {"time_tag": "2026-11-12T00:00:00Z", "Kp": 2.67},
+      {"time_tag": "2026-11-12T03:00:00Z", "Kp": 2.33},
+      {"time_tag": "2026-11-12T06:00:00Z", "Kp": 2.33}
+    ]
+  },
+  "donki": {
+    "cme_events": [
+      {
+        "activityID": "2026-11-10T14:24:00-CME-001",
+        "startTime": "2026-11-10T14:24Z",
+        "note": "Demonstration CME sample event (non-Earth-directed narrow streamer).",
+        "sourceLocation": "S18E42"
+      }
+    ],
+    "flare_events": [
+      {
+        "flrID": "2026-11-11T08:15:00-FLR-001",
+        "beginTime": "2026-11-11T08:15Z",
+        "classType": "C4.2",
+        "sourceLocation": "N12W20"
+      }
+    ],
+    "gst_events": []
+  }
+}
+

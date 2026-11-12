@@ -1,22 +1,16 @@
 import React from 'react';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 
 export default function MissionCharts({ chartData }) {
-  const riskBreakdown = chartData?.risk_breakdown || [
-    { name: 'Debris Conjunction', risk_index: 26, domain: 'SSA' },
-    { name: 'Space Weather', risk_index: 15, domain: 'Heliophysics' },
-    { name: 'Feasibility Constraint', risk_index: 10, domain: 'Propulsion' },
-    { name: 'Coverage Gap', risk_index: 7, domain: 'Constellation' }
-  ];
+  const riskBreakdown = (chartData?.risk_breakdown || []).map((item) => ({
+    ...item,
+    risk_index: item.risk_index ?? 0,
+    isUnavailable: item.risk_index === null || item.risk_index === undefined,
+  }));
 
-  const windowComparison = chartData?.launch_window_comparison || [
-    { window: 'Monday', risk: 68, cost: 39, coverage: 89, safety: 32 },
-    { window: 'Tuesday (Recommended)', risk: 24, cost: 42, coverage: 93, safety: 88 },
-    { window: 'Wednesday', risk: 45, cost: 46, coverage: 91, safety: 72 }
-  ];
+  const windowComparison = chartData?.launch_window_comparison || [];
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -26,7 +20,9 @@ export default function MissionCharts({ chartData }) {
           {payload.map((item, index) => (
             <p key={index} style={{ color: item.color }} className="flex justify-between gap-4">
               <span>{item.name}:</span>
-              <span className="font-bold">{item.value}{item.name.includes('cost') ? '$M' : (item.name.includes('coverage') ? '%' : '')}</span>
+              <span className="font-bold">
+                {item.payload?.isUnavailable ? 'Unavailable' : `${item.value}${item.name.includes('%') || item.name.includes('Coverage') ? '%' : ''}`}
+              </span>
             </p>
           ))}
         </div>
@@ -42,74 +38,68 @@ export default function MissionCharts({ chartData }) {
         <div className="flex items-center justify-between pb-3 border-b border-space-700/50 mb-4">
           <div>
             <h3 className="text-sm font-semibold text-white tracking-wide flex items-center gap-2">
-              <span className="w-2 h-2 rounded-sm bg-rose-500"></span>
+              <span className="w-2 h-2 rounded-sm bg-rose-500" />
               DOMAIN RISK FACTOR BREAKDOWN
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">Normalized vulnerability index per agent domain (0 = Minimal, 100 = Critical)</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Measured vulnerability index per agent domain (0 = Minimal, 100 = Critical)
+            </p>
           </div>
         </div>
 
         <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={riskBreakdown}
-              layout="vertical"
-              margin={{ top: 5, right: 20, left: 40, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#1a2b4c" horizontal={false} />
-              <XAxis type="number" domain={[0, 100]} stroke="#64748b" tick={{ fill: '#94a3b8', fontSize: 11 }} />
-              <YAxis
-                type="category"
-                dataKey="name"
-                stroke="#64748b"
-                tick={{ fill: '#e2e8f0', fontSize: 11 }}
-                width={130}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar
-                dataKey="risk_index"
-                name="Risk Index"
-                fill="#f43f5e"
-                radius={[0, 4, 4, 0]}
-                barSize={18}
-              />
-            </BarChart>
-          </ResponsiveContainer>
+          {riskBreakdown.length === 0 ? (
+            <div className="h-full flex items-center justify-center text-xs text-slate-400 font-mono">
+              No risk breakdown calculated yet.
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={riskBreakdown} layout="vertical" margin={{ top: 5, right: 20, left: 40, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1a2b4c" horizontal={false} />
+                <XAxis type="number" domain={[0, 100]} stroke="#64748b" tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                <YAxis type="category" dataKey="name" stroke="#64748b" tick={{ fill: '#e2e8f0', fontSize: 11 }} width={135} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="risk_index" name="Risk Index" fill="#f43f5e" radius={[0, 4, 4, 0]} barSize={18} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
 
-      {/* Chart B: Launch Window Comparison */}
+      {/* Chart B: Candidate Launch Window Comparison */}
       <div className="bg-space-900/80 border border-space-700/70 rounded-xl p-5 shadow-lg backdrop-blur-md flex flex-col">
         <div className="flex items-center justify-between pb-3 border-b border-space-700/50 mb-4">
           <div>
             <h3 className="text-sm font-semibold text-white tracking-wide flex items-center gap-2">
-              <span className="w-2 h-2 rounded-sm bg-cyan-400"></span>
-              LAUNCH WINDOW TRADE-OFF COMPARISON
+              <span className="w-2 h-2 rounded-sm bg-cyan-400" />
+              CANDIDATE EPOCH COMPARISON
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">Multi-objective evaluation across candidate launch epochs</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Deterministic readiness, coverage & propagated risk across flexibility window
+            </p>
           </div>
         </div>
 
         <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={windowComparison}
-              margin={{ top: 10, right: 10, left: -10, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#1a2b4c" vertical={false} />
-              <XAxis dataKey="window" stroke="#64748b" tick={{ fill: '#94a3b8', fontSize: 11 }} />
-              <YAxis stroke="#64748b" tick={{ fill: '#94a3b8', fontSize: 11 }} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend
-                wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
-                formatter={(value) => <span className="text-slate-300 capitalize">{value}</span>}
-              />
-              <Bar dataKey="safety" name="Safety Score" fill="#10b981" radius={[3, 3, 0, 0]} barSize={16} />
-              <Bar dataKey="coverage" name="Coverage %" fill="#00f2fe" radius={[3, 3, 0, 0]} barSize={16} />
-              <Bar dataKey="risk" name="Conjunction Risk" fill="#f43f5e" radius={[3, 3, 0, 0]} barSize={16} />
-              <Bar dataKey="cost" name="Cost ($M)" fill="#f6ad55" radius={[3, 3, 0, 0]} barSize={16} />
-            </BarChart>
-          </ResponsiveContainer>
+          {windowComparison.length === 0 ? (
+            <div className="h-full flex items-center justify-center text-xs text-amber-200 font-mono text-center px-4">
+              Candidate launch-window comparison unavailable until required domain telemetry is present.
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={windowComparison} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1a2b4c" vertical={false} />
+                <XAxis dataKey="date" stroke="#64748b" tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                <YAxis stroke="#64748b" domain={[0, 100]} tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
+                <Bar dataKey="readiness" name="Readiness" fill="#10b981" radius={[3, 3, 0, 0]} barSize={14} />
+                <Bar dataKey="coverage_score" name="Coverage %" fill="#00f2fe" radius={[3, 3, 0, 0]} barSize={14} />
+                <Bar dataKey="debris_risk" name="Debris Risk" fill="#f43f5e" radius={[3, 3, 0, 0]} barSize={14} />
+                <Bar dataKey="weather_risk" name="Weather Risk" fill="#f59e0b" radius={[3, 3, 0, 0]} barSize={14} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
     </div>

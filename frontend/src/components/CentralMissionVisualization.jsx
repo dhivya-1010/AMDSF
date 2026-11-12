@@ -25,9 +25,9 @@ export default function CentralMissionVisualization({
   const [orbitAngle, setOrbitAngle] = useState(45); // in degrees
   const animationFrameRef = useRef(null);
 
-  const orbit = mission.orbit || {};
-  const target = mission.target || {};
-  const launch = mission.launch || {};
+  const orbit = mission?.orbit || {};
+  const target = mission?.target || {};
+  const launch = mission?.launch || {};
 
   const debris = analysisResults?.debris || {};
   const weather = analysisResults?.weather || {};
@@ -96,7 +96,7 @@ export default function CentralMissionVisualization({
             <strong className="text-cyan-300">ALT:</strong> {altKm} km
           </span>
           <span className="hidden sm:inline">
-            <strong className="text-cyan-300">INC:</strong> {orbit.inclination_deg}°
+            <strong className="text-cyan-300">INC:</strong> {orbit.inclination_deg != null ? `${orbit.inclination_deg}°` : '—'}
           </span>
           <span className="hidden md:inline">
             <strong className="text-cyan-300">VEL:</strong> {velocityKms} km/s
@@ -274,7 +274,9 @@ export default function CentralMissionVisualization({
                 {target.area || target.region || "Target Zone"}
               </text>
               <text x="10" y="42" fill="#94a3b8" fontSize="8.5" fontFamily="JetBrains Mono">
-                {target.country} ({target.latitude}°N, {target.longitude}°E)
+                {target.latitude != null && target.longitude != null
+                  ? `${target.country ? `${target.country} ` : ''}(${target.latitude}°N, ${target.longitude}°E)`
+                  : (target.country || 'Coordinates pending')}
               </text>
             </g>
           </g>
@@ -340,7 +342,7 @@ export default function CentralMissionVisualization({
               <g transform="translate(18, -12)">
                 <rect x="0" y="0" width="125" height="24" rx="4" fill="#030712" stroke="#00f2fe" strokeWidth="0.8" opacity="0.9" />
                 <text x="6" y="11" fill="#00f2fe" fontSize="8.5" fontFamily="JetBrains Mono" fontWeight="bold">
-                  ● SATELLITE [{orbit.type}]
+                  ● SATELLITE [{orbit.type || 'LEO'}]
                 </text>
                 <text x="6" y="20" fill="#94a3b8" fontSize="7.5" fontFamily="JetBrains Mono">
                   v: {velocityKms} km/s • θ: {orbitAngle.toFixed(0)}°
@@ -355,7 +357,7 @@ export default function CentralMissionVisualization({
               ORBITAL TRACK GEOMETRY:
             </text>
             <text x="0" y="14" fill="#00f2fe" fontSize="10" fontFamily="JetBrains Mono" fontWeight="bold">
-              h = {altKm} km | i = {orbit.inclination_deg}° SSO
+              h = {altKm} km | i = {orbit.inclination_deg != null ? `${orbit.inclination_deg}°` : '—'} {orbit.type || 'LEO'}
             </text>
             <text x="0" y="26" fill="#94a3b8" fontSize="8.5" fontFamily="JetBrains Mono">
               Nodal Period: T = {periodMin} min
@@ -366,7 +368,7 @@ export default function CentralMissionVisualization({
         {/* Tactical HUD Corner Crosshairs */}
         <div className="absolute top-3 left-3 text-[10px] font-mono text-cyan-400/70 pointer-events-none flex flex-col gap-0.5">
           <span className="font-bold tracking-wider">TRACKING NODE // ACTIVE</span>
-          <span className="text-slate-400">EPOCH: {mission.constraints?.preferred_launch_date || '2026-10-15'}</span>
+          <span className="text-slate-400">EPOCH: {mission?.constraints?.preferred_launch_date || '2026-10-15'}</span>
         </div>
 
         <div className="absolute top-3 right-3 text-[10px] font-mono text-cyan-400/70 pointer-events-none text-right flex flex-col gap-0.5">

@@ -1,10 +1,12 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
+
 
 class WeatherAnalysisResult(BaseModel):
     mission_id: Optional[str] = None
     agent: str = "Space Weather Intelligence Agent"
     status: str = "completed"
+    data_mode: str = "UNAVAILABLE"
     kp_index: Optional[float] = None
     solar_activity: str
     cme_activity: bool

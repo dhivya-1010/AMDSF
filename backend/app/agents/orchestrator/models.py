@@ -1,14 +1,23 @@
 from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional
 
+
 class RecommendationDetails(BaseModel):
+    decision: str = "HOLD"  # GO | CONDITIONAL GO | HOLD
+    reason: str = ""
     launch_window: str
     risk_level: str
     readiness: int
     reasoning: List[str]
+    supporting_evidence: List[str] = Field(default_factory=list)
+    failed_or_unavailable_checks: List[str] = Field(default_factory=list)
+    risk_factors: List[str] = Field(default_factory=list)
+    required_next_actions: List[str] = Field(default_factory=list)
+    data_freshness: Dict[str, Any] = Field(default_factory=dict)
     tradeoffs: List[str]
     mitigation: List[str]
     disclaimer: str = "Decision-support prototype only. AMDSF does not directly command or execute spacecraft flight operations."
+
 
 class OrchestratorResult(BaseModel):
     mission_id: Optional[str] = None
