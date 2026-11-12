@@ -6,6 +6,7 @@ import StarfieldCanvas from '../components/StarfieldCanvas';
 import BackgroundScene from '../components/BackgroundScene';
 import OrchestrationFlowVisualization from '../components/OrchestrationFlowVisualization';
 import MissionCharts from '../components/MissionCharts';
+import NgboostRiskPanel from '../components/NgboostRiskPanel';
 import NoActiveMissionState from '../components/NoActiveMissionState';
 import ErrorState from '../components/ErrorState';
 
@@ -134,6 +135,11 @@ export default function MissionRecommendation() {
             {results?.chart_data && (
               <MissionCharts chartData={results.chart_data} />
             )}
+
+            <NgboostRiskPanel
+              mission={currentMission}
+              analysisResults={results}
+            />
 
             <div className="p-3.5 rounded-xl bg-slate-950/80 border border-white/10 text-xs font-mono text-slate-400 flex items-center justify-between">
               <div className="flex items-center gap-2">

@@ -7,3 +7,6 @@ python-dotenv>=1.0.1
 sgp4>=2.23
 scipy>=1.11.0
 astropy>=6.0.0
+ngboost>=0.5.11
+scikit-learn>=1.6.0,<2.0.0
+joblib>=1.2.0

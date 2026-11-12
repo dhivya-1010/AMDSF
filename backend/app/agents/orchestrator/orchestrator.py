@@ -129,6 +129,7 @@ class MissionOrchestrator:
             "orchestration": orchestrator_res.model_dump(),
             "orchestrator": orchestrator_res.model_dump(),
             "recommendation": orchestrator_res.recommendation.model_dump(),
+            "ml_encounter_risk": orchestrator_res.ml_encounter_risk,
             "chart_data": orchestrator_res.chart_data,
             "map_data": orchestrator_res.map_data,
         }

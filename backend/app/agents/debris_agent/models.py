@@ -29,4 +29,5 @@ class DebrisAnalysisResult(BaseModel):
     factors: List[str]
     orbital_objects: List[DebrisObjectItem]
     details: Dict[str, Any]
+    ml_encounter_risk: Optional[Dict[str, Any]] = None
     timestamp: Optional[str] = None

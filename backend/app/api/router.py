@@ -5,6 +5,7 @@ from app.api.routes.debris import router as debris_router
 from app.api.routes.weather import router as weather_router
 from app.api.routes.feasibility import router as feasibility_router
 from app.api.routes.coverage import router as coverage_router
+from app.api.routes.ml import router as ml_router
 
 api_router = APIRouter()
 
@@ -14,3 +15,4 @@ api_router.include_router(debris_router)
 api_router.include_router(weather_router)
 api_router.include_router(feasibility_router)
 api_router.include_router(coverage_router)
+api_router.include_router(ml_router)

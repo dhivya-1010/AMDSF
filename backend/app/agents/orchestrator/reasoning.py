@@ -158,6 +158,29 @@ class CrossDomainReasoner:
                 failed_or_unavailable.append("Debris screening executed on offline demonstration catalog (not live CelesTrak GP).")
                 required_next_actions.append("Re-run orbital debris screening against live CelesTrak GP catalog before commit.")
 
+        # 1b. Secondary ML Encounter Risk Assessment (NGBoost - advisory only; SGP4 remains primary)
+        ml_risk = getattr(debris, "ml_encounter_risk", None) or debris_details.get("ml_encounter_risk")
+        if ml_risk and ml_risk.get("status") == "completed":
+            ml_pred = ml_risk.get("prediction", "UNKNOWN")
+            ml_probs = ml_risk.get("probabilities_percent") or {}
+            supporting_evidence.append(
+                f"NGBoost Encounter Risk Advisory (DEMONSTRATION ML): {ml_pred} "
+                f"(Low={ml_probs.get('low', 0)}%, Med={ml_probs.get('medium', 0)}%, High={ml_probs.get('high', 0)}%; "
+                f"non-calibrated synthetic support model)."
+            )
+            if ml_pred == "HIGH RISK" and not is_debris_high:
+                risk_factors.append(
+                    f"NGBoost probabilistic classifier flagged elevated HIGH RISK ({ml_probs.get('high', 0)}%) "
+                    f"on closest screened object despite deterministic threshold clearance; verify close-approach geometry."
+                )
+                required_next_actions.append(
+                    "Review closest screened object geometry highlighted by NGBoost encounter classifier."
+                )
+        elif debris_ok:
+            failed_or_unavailable.append(
+                "NGBoost ML encounter assessment unavailable (missing/invalid encounter feature vector)."
+            )
+
         # 2. Space weather evaluation
         weather_mode = getattr(weather, "data_mode", weather_details.get("data_mode", "UNKNOWN"))
         if not weather_ok:
@@ -434,9 +457,15 @@ class CrossDomainReasoner:
                     if coverage.coverage_percent is not None
                     else f"Unavailable ({coverage.status})"
                 ),
+                "ml_encounter_risk": (
+                    f"{ml_risk.get('prediction')} (NGBoost DEMONSTRATION)"
+                    if ml_risk and ml_risk.get("status") == "completed"
+                    else "Unavailable (SGP4 inputs missing)"
+                ),
             },
             conflicts_detected=conflicts,
             resolution_strategy=resolution,
+            ml_encounter_risk=ml_risk,
             recommendation=RecommendationDetails(
                 decision=decision,
                 reason=reason,
@@ -451,6 +480,7 @@ class CrossDomainReasoner:
                 data_freshness=data_freshness,
                 tradeoffs=tradeoffs,
                 mitigation=mitigation,
+                ml_encounter_risk=ml_risk,
             ),
             chart_data=chart_data,
             map_data=map_data,

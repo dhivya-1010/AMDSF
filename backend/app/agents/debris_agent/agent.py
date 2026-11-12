@@ -1,10 +1,12 @@
 import asyncio
 from datetime import datetime, timezone
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 
 from app.config import settings
+from app.core.logging import logger
+from app.ml.encounter_risk import encounter_risk_predictor
 from app.services.celestrak_service import celestrak_service
 from .analyzer import DebrisAnalyzer
 from .models import DebrisAnalysisResult
@@ -190,6 +192,42 @@ class DebrisAgent:
             mission_record.get("catalog_identifier") if mission_record else None
         )
         result.details["mission_epoch"] = mission_record.get("epoch") if mission_record else None
+
+        # Run NGBoost Probabilistic Satellite Encounter Risk Prediction when valid SGP4 encounter features exist
+        ml_payload: Dict[str, Any] = {
+            "model": "NGBoost",
+            "status": "unavailable",
+            "data_mode": "DEMONSTRATION",
+            "reason": "Valid SGP4 encounter features unavailable; missing inputs are never treated as LOW RISK.",
+        }
+        candidate_list = encounters or closest_screened
+        if mission_propagated and result.risk_level not in ("INSUFFICIENT_DATA", "UNAVAILABLE") and candidate_list:
+            lead = candidate_list[0]
+            dist_km = lead.get("minimum_separation_km")
+            rel_vel = lead.get("relative_velocity_kms")
+            alt_km = lead.get("altitude_km") or target_orbit_km
+            inc_deg = inclination_deg if inclination_deg is not None else lead.get("inclination_deg")
+            if dist_km is not None and rel_vel is not None and alt_km is not None and inc_deg is not None:
+                try:
+                    ml_pred = await asyncio.to_thread(
+                        encounter_risk_predictor.predict,
+                        closest_approach_distance=float(dist_km),
+                        relative_velocity=float(rel_vel),
+                        orbital_altitude=float(alt_km),
+                        orbital_inclination=float(inc_deg),
+                    )
+                    ml_payload = {
+                        **ml_pred,
+                        "status": "completed",
+                        "screened_object_name": lead.get("name"),
+                        "screened_catalog_id": lead.get("catalog_identifier") or lead.get("norad_id"),
+                    }
+                except (ValueError, RuntimeError) as exc:
+                    logger.warning("NGBoost encounter assessment skipped for mission %s: %s", mission_id, exc)
+                    ml_payload["reason"] = f"Invalid encounter feature inputs for NGBoost: {exc}"
+
+        result.ml_encounter_risk = ml_payload
+        result.details["ml_encounter_risk"] = ml_payload
         return result
 
 

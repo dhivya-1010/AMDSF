@@ -16,6 +16,7 @@ class RecommendationDetails(BaseModel):
     data_freshness: Dict[str, Any] = Field(default_factory=dict)
     tradeoffs: List[str]
     mitigation: List[str]
+    ml_encounter_risk: Optional[Dict[str, Any]] = None
     disclaimer: str = "Decision-support prototype only. AMDSF does not directly command or execute spacecraft flight operations."
 
 
@@ -26,6 +27,7 @@ class OrchestratorResult(BaseModel):
     conflicts_detected: List[str]
     resolution_strategy: str
     recommendation: RecommendationDetails
+    ml_encounter_risk: Optional[Dict[str, Any]] = None
     chart_data: Dict[str, Any]
     map_data: Dict[str, Any]
     timestamp: Optional[str] = None

@@ -74,6 +74,17 @@ export const missionApi = {
     return response.data;
   },
 
+  // NGBoost Probabilistic Encounter Risk ML
+  getMlModelInfo: async () => {
+    const response = await apiClient.get('/ml/model-info');
+    return response.data;
+  },
+
+  predictEncounterRisk: async (encounterFeatures) => {
+    const response = await apiClient.post('/ml/predict-risk', encounterFeatures);
+    return response.data;
+  },
+
   // Server health check
   checkHealth: async () => {
     const response = await axios.get(`${ROOT_URL}/api/health`, { timeout: 6000 });

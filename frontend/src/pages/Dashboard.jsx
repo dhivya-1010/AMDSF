@@ -5,6 +5,7 @@ import { useMission } from '../context/MissionContext';
 import DashboardBackground from '../components/DashboardBackground';
 import CentralMissionVisualization from '../components/CentralMissionVisualization';
 import AgentSystemTopology from '../components/AgentSystemTopology';
+import NgboostRiskPanel from '../components/NgboostRiskPanel';
 import ErrorState from '../components/ErrorState';
 
 const DEMO_SAMPLE_MISSION = {
@@ -182,6 +183,11 @@ export default function Dashboard() {
           mission={currentMission}
           analysisResults={results}
           analysisStatus={analysisStatus}
+        />
+
+        <NgboostRiskPanel
+          mission={currentMission}
+          analysisResults={results}
         />
       </div>
     </div>

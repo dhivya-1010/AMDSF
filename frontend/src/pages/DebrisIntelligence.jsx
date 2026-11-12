@@ -5,6 +5,7 @@ import MissionContextBar from '../components/MissionContextBar';
 import StarfieldCanvas from '../components/StarfieldCanvas';
 import BackgroundScene from '../components/BackgroundScene';
 import DebrisOrbitalEnvironment from '../components/DebrisOrbitalEnvironment';
+import NgboostRiskPanel from '../components/NgboostRiskPanel';
 import NoActiveMissionState from '../components/NoActiveMissionState';
 import ErrorState from '../components/ErrorState';
 
@@ -81,6 +82,11 @@ export default function DebrisIntelligence() {
               debris={debris}
               mission={currentMission}
               status={status}
+            />
+
+            <NgboostRiskPanel
+              mission={currentMission}
+              analysisResults={analysisResults}
             />
           </>
         )}
