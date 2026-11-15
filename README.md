@@ -1,4 +1,4 @@
-# AMDSF — Agentic Multi-Domain Space Mission Decision Support Framework
+# AMDSF: An Agentic Multi-Domain Space Mission Decision Support Framework
 
 AMDSF is a modular, agentic decision-support framework designed for space mission planning, orbital conjunction hazard assessment, space weather dynamics, propulsion/staging feasibility, and ground revisit geometry.
 
